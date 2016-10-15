@@ -1,0 +1,21 @@
+.ui.secondary.inverted.pointing.menu {
+  border: none !important;
+}
+
+.ui.secondary.inverted.pointing.menu .ui.inverted.button {
+  margin-left: 0.5em;
+}
+
+.inverted .ui.input {
+  color: white;
+}
+
+.pusher {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+}
