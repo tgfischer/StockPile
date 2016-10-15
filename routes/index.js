@@ -4,6 +4,7 @@ var Company = require('../models/Company');
 var Sentiment = require("../models/Sentiment");
 var router = express.Router();
 var request = require("request"); 
+var dq = require('datatables-query')
 
 var API_KEY = "18bcbc1c281f1431245daff8bbc743e7469e05cc";
 
@@ -16,10 +17,19 @@ router.get('/', function(req, res, next) {
     });
   });
   */
-  Company.find({ }, 'name symbol', function(err, companies) {
-    res.render('index', {
-      companies: companies
-    });
+  res.render('index');
+});
+
+router.post('/get_listings', function(req, res, next) {
+  var query = dq(Company);
+
+  query.run(req.body).then(function(data) {
+    // TODO: Check the last time the company's information was updated. If greater
+    // than n days, update them again
+    console.log(data, null, 2);
+    res.json(data);
+  }, function (err) {
+    res.status(500).json(err);
   });
 });
 

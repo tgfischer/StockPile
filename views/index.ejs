@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,7 +12,6 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.semanticui.min.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.semanticui.min.css">
   <link rel="stylesheet" type="text/css" href="/css/styles.css">
-  <link rel="stylesheet" type="text/css" href="/css/index.css">
 </head>
 <body>
   <% include common/mobile-nav %>
@@ -28,11 +26,13 @@
       <div class="ui middle aligned stackable grid container">
         <div class="row">
           <div class="column">
-            <table class="ui inverted celled listings table" cellspacing="0" width="100%">
+            <table class="ui inverted celled striped selectable listings table" cellspacing="0" width="100%">
               <thead>
                 <tr>
+                  <th></th>
                   <th>Company Name</th>
                   <th>Symbol</th>
+                  <!-- <th></th> -->
                 </tr>
               </thead>
               <tbody>
@@ -57,24 +57,31 @@
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
 
     var table = $('.listings').DataTable({
-      data: <%- JSON.stringify(companies) %>,
+      serverSide: true,
+      ajax: {
+        url: '/get_listings',
+        type: 'POST'
+      },
       columns: [
+        { data: "_id", visible: false, searchable: false },
         { data: "name", title: "Company Name" },
-        { data: "symbol", title: "Symbol" }
+        { data: "symbol", title: "Symbol" }//,
+        //{ data: "lastUpdated", visible: false, searchable: false }
       ]
     });
 
-    var getPrices = function() {
-      var info = table.page.info();
-      var data = table.rows({ page: 'current' }).data().toArray();
+    $('.listings tbody').on( 'click', 'tr', function () {
+      var row = table.row(this).data();
 
-      debugger;
-    }
-
-    $('.listings').on('page.dt', getPrices);
-    $('.listings').on('search.dt', getPrices);
-    $('.listings').on('init.dt', getPrices);
-    $('.listings').on('order.dt', getPrices);
+      window.location.href = "/stock/" + row.symbol;
+      /*if ($(this).hasClass('selected')) {
+        $(this).removeClass('selected');
+      }
+      else {
+        table.$('tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+      }*/
+    });
   });
   </script>
 
