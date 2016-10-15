@@ -1,10 +1,10 @@
 var express = require('express');
 var listings = require('../config/nasdaq-listing');
 var Company = require('../models/Company');
-var router = express.Router();
-var request = require("request"); 
+var request = require("request");
 var moment = require("moment");
-
+var dq = require('datatables-query')
+var router = express.Router();
 
 var API_KEY = "18bcbc1c281f1431245daff8bbc743e7469e05cc";
 
@@ -17,19 +17,28 @@ router.get('/', function(req, res, next) {
     });
   });
   */
-  Company.find({ }, 'name symbol', function(err, companies) {
-    res.render('index', {
-      companies: companies
-    });
+  res.render('index');
+});
+
+router.post('/get_listings', function(req, res, next) {
+  var query = dq(Company);
+
+  query.run(req.body).then(function(data) {
+    // TODO: Check the last time the company's information was updated. If greater
+    // than n days, update them again
+    console.log(data, null, 2);
+    res.json(data);
+  }, function (err) {
+    res.status(500).json(err);
   });
 });
 
 /* GET sentiment data for 'company' */
 router.get("/news", function(req, res, next) {
-  var requestURI = "https://access.alchemyapi.com/calls/data/GetNews?apikey=" + API_KEY + "&return=enriched.url.title,enriched.url.enrichedTitle.docSentiment&start=now-7d&end=now&q.enriched.url.enrichedTitle.entities.entity=|text=" + "Apple" + ",type=company|&count=10000&dedup=true&outputMode=json"; 
+  var requestURI = "https://access.alchemyapi.com/calls/data/GetNews?apikey=" + API_KEY + "&return=enriched.url.title,enriched.url.enrichedTitle.docSentiment&start=now-7d&end=now&q.enriched.url.enrichedTitle.entities.entity=|text=" + "Apple" + ",type=company|&count=10000&dedup=true&outputMode=json";
 
   request({
-    uri: requestURI, 
+    uri: requestURI,
     method: "GET",
     timeout: 10000
   }, function(err, response, body) {
@@ -41,7 +50,7 @@ router.get("/news", function(req, res, next) {
       if (body.result && body.result.docs && body.result.docs.length) {
         for (var i = 0; i < body.result.docs.length; i++) {
           var item = body.result.docs[i];
-          if (item.source && item.source.enriched && item.source.enriched.url && item.source.enriched.url.enrichedTitle 
+          if (item.source && item.source.enriched && item.source.enriched.url && item.source.enriched.url.enrichedTitle
                           && item.source.enriched.url.enrichedTitle.docSentiment) {
 
             var sentiment = item.source.enriched.url.enrichedTitle.docSentiment;
@@ -61,8 +70,8 @@ router.get("/news", function(req, res, next) {
             }
           }
         }
-      }  
-      res.send ("Successfully obtained the sentiment data: " + JSON.stringify(body, null, 2));     
+      }
+      res.send ("Successfully obtained the sentiment data: " + JSON.stringify(body, null, 2));
     }
   });
 });

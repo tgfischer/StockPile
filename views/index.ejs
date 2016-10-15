@@ -57,7 +57,11 @@
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
 
     var table = $('.listings').DataTable({
-      data: <%- JSON.stringify(companies) %>,
+      serverSide: true,
+      ajax: {
+        url: '/get_listings',
+        type: 'POST'
+      },
       columns: [
         { data: "name", title: "Company Name" },
         { data: "symbol", title: "Symbol" }
