@@ -6,6 +6,7 @@ var CompanySchema = new Schema({
   symbol: String,
   open: Number,
   prevClose: Number,
+  lastUpdated: Date,
   sentiments: [{ type: Schema.Types.ObjectId, ref: 'Sentiment' }]
 }, {
   collection : 'companies'
