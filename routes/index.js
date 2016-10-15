@@ -1,10 +1,10 @@
 var express = require('express');
 var listings = require('../config/nasdaq-listing');
 var Company = require('../models/Company');
-var request = require("request");
-var moment = require("moment");
-var dq = require('datatables-query')
+var Sentiment = require("../models/Sentiment");
 var router = express.Router();
+var request = require("request"); 
+var dq = require('datatables-query')
 
 var API_KEY = "18bcbc1c281f1431245daff8bbc743e7469e05cc";
 
@@ -34,51 +34,85 @@ router.post('/get_listings', function(req, res, next) {
 });
 
 /* GET sentiment data for 'company' */
-router.get("/news", function(req, res, next) {
-  var requestURI = "https://access.alchemyapi.com/calls/data/GetNews?apikey=" + API_KEY + "&return=enriched.url.title,enriched.url.enrichedTitle.docSentiment&rank=high&start=now-40d&end=now&q.enriched.url.enrichedTitle.entities.entity=|text=" + "Google" + ",type=company|&count=2000&dedup=true&outputMode=json";
+router.get("/news/:_id", function(req, res, next) {
+  var companyId = req.params._id;
+  var requestURI = "https://access.alchemyapi.com/calls/data/GetNews?apikey=" + API_KEY + "&return=enriched.url.title,enriched.url.enrichedTitle.docSentiment&rank=high&start=now-40d&end=now&q.enriched.url.enrichedTitle.entities.entity=|text=" + "Google" + ",type=company|&count=2000&dedup=true&outputMode=json"; 
 
-  request({
-    uri: requestURI,
-    method: "GET",
-    timeout: 10000
-  }, function(err, response, body) {
+  /*The route will be passed the _id of the company. We can do a find by id here to pick out the correct company for making 
+    the request, and then also use the company _id when saving the sentimentArray into the correct company. Use a callback
+    after getting the full array of sentiment data to execute the save all and company save. */
+  var handleResponse = function(err, response, body, callback) {
+    var arrayOfSentiments = [];
     if (err) {
       res.send ("An error occurred: " + err);
     } else {
-      // We successfully gathered the sentiment data for this company
-      body = JSON.parse(body);
+      body = JSON.parse(body);  // Put body data into a readable format
+      if (body.status && body.statusInfo) {
+        res.send ("We could not get a response: " + body.statusInfo);
+      }
+      // We successfully retrieved the sentiment data for this company     
       if (body.result && body.result.docs && body.result.docs.length) {
         for (var i = 0; i < body.result.docs.length; i++) {
           var item = body.result.docs[i];
-          if (item.source && item.source.enriched && item.source.enriched.url && item.source.enriched.url.enrichedTitle
-                          && item.source.enriched.url.enrichedTitle.docSentiment) {
+          if (item && item.source && item.source.enriched && item.source.enriched.url && item.source.enriched.url.enrichedTitle 
+                  && item.source.enriched.url.enrichedTitle.docSentiment && item.timestamp) {
+            
+            // Pull out the important information from the current result.
+            var docSentiment = item.source.enriched.url.enrichedTitle.docSentiment;
+            var score = docSentiment.score;
+            var unixTime = new Date(item.timestamp * 1000);
+            var finalDate = new Date(unixTime.getFullYear(), unixTime.getMonth(), unixTime.getDate(), unixTime.getHours(), 
+                  unixTime.getMinutes(), unixTime.getSeconds(), 0);  
 
-            var sentiment = item.source.enriched.url.enrichedTitle.docSentiment;
-            var score = sentiment.score;
-            //console.log("Score " + i + ": " + score);
-            if (item.timestamp) {
-              var a = new Date(item.timestamp * 1000);
-              var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-              var year = a.getFullYear();
-              var month = months[a.getMonth()];
-              var date = a.getDate();
-              var hour = a.getHours();
-              var min = a.getMinutes();
-              var sec = a.getSeconds();
-              var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-              if (i == 1) {
-                console.log("Date 1:" + time);
-              } else if (i == body.result.docs.length - 1) {
-                console.log("Date " + i + ": " + time);
-              }
-            }
+            var sentimentObject = {
+              score: score,
+              date: finalDate
+            };
+            arrayOfSentiments.push(sentimentObject);
           }
         }
-      }
-      res.send ("Successfully obtained the sentiment data: " + JSON.stringify(body, null, 2));
+        callback(arrayOfSentiments);
+      } 
     }
+  };
+
+  // Fire off the request to the AlchemyNews API to gather more sentiment data
+  request({
+    uri: requestURI, 
+    method: "GET",
+    timeout: 10000
+  }, function(err, response, body) {
+      handleResponse(err, response, body, function(sentiments) {
+        // This callback will accept an array of the sentiments we need to save to the current company
+        Sentiment.insertMany(sentiments, function(many_err, sents) {
+          if (many_err) {
+            res.send ("Error entering sentiments: " + many_err);
+          } else {
+            // Saved Sentiments to MongoDB. This is where we will attach the SAVED sentiments in the Company using the id passed.
+            Company.findById(companyId, function(comp_err, company) {
+              if (comp_err) {
+                res.send("Error retrieving company to add sentiment data: " + comp_err);
+              } else {
+                for (var i = 0; i < sents.length; i++) {
+                  company.sentiments.push(sents[i]._id);
+                }
+
+                var upsertData = company.toObject();
+                delete upsertData._id;
+                Company.update({symbol: company.symbol}, upsertData, {upsert:true}, function(insert_err) {
+                  if (insert_err) {
+                    res.send("Error updating company sentiment information: " + insert_err);
+                  } else {
+                    res.send ("Successfully obtained the sentiment data & stored in company: " + body);     
+                  }
+                });
+              }
+            });
+          }
+        }); 
+      });
+    }); 
   });
-});
 
 
 

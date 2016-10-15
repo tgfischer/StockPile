@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var SenitmentSchema = new Schema({
+var SentimentSchema = new Schema({
   score: Number,
   date: Date
 }, {
