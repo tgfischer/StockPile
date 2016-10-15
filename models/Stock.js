@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 var StockSchema = new Schema({
   price: Number,
   purchaseDate: Date,
-  company: { type: Schema.Types.ObjectId, ref: 'Company' }
+  company: { type: Schema.Types.ObjectId, ref: 'Company' },
+  user: { type: Schema.Types.ObjectId, ref: 'User' }
 }, {
   collection : 'stocks'
 });

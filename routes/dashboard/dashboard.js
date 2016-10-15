@@ -13,7 +13,7 @@ router.get('/', Auth.isLoggedIn, function(req, res, next) {
 });
 
 router.post('/buy', Auth.isLoggedIn, function(req, res, next) {
-  var numStocks = parseInt(sanitizer.sanitize(req.body.numBuyStocks));
+  var numStocks = parseInt(sanitizer.sanitize(req.body.numStocks));
   var pricePerStock = parseFloat(sanitizer.sanitize(req.body.pricePerStock));
   var stocks = [];
 
@@ -22,33 +22,69 @@ router.post('/buy', Auth.isLoggedIn, function(req, res, next) {
       stocks.push({
         price: company.open,
         purchaseDate: Date.now(),
-        company: company._id
+        company: company._id,
+        user: req.user._id
       });
     }
 
     Stock.insertMany(stocks, function(err, stocks) {
-      var stockIds = [];
-
-      stocks.forEach(function(stock) {
-        stockIds.push(stock._id);
+      var ids = stocks.map(function(stock) {
+        return stock._id;
       });
-      console.log(JSON.stringify(stockIds, null, 2));
+
       User.update({
         _id: req.user._id
       }, {
         $push: {
           stocks: {
-            $each: stockIds
+            $each: ids
           }
         }
       }, {
         upsert: true
       }, function(err) {
-
         res.json({ msg: 'Success!' });
       });
     });
-  })
+  });
+});
+
+router.post('/sell', Auth.isLoggedIn, function(req, res, next) {
+  var numStocks = parseInt(sanitizer.sanitize(req.body.numStocks));
+  var pricePerStock = parseFloat(sanitizer.sanitize(req.body.pricePerStock));
+  var stocks = [];
+
+  console.log(JSON.stringify(req.body, null, 2));
+
+  Stock.find({
+    company : sanitizer.sanitize(req.body.companyId),
+    user: req.user._id
+  }).limit(numStocks).exec(function(err, stocks) {
+    console.log(JSON.stringify(stocks, null, 2));
+    var ids = stocks.map(function(stock) {
+      return stock._id;
+    });
+
+    Stock.remove({
+      _id: {
+        $in: ids
+      }
+    }, function (err) {
+      User.update({
+        _id: req.user._id
+      }, {
+        $pull: {
+          stocks: {
+            $in: ids
+          }
+        }
+      }, {
+        upsert: true
+      }, function(err) {
+        res.json({ msg: 'Success!' });
+      });
+    });
+  });
 });
 
 router.post('/get_stocks', Auth.isLoggedIn, function(req, res, next) {
