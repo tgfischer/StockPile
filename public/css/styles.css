@@ -2,8 +2,16 @@
   padding-right: 15px;
 }
 
+.dt-center {
+  text-align: center !important;
+}
+
 .title {
   font-size: 25px;
+}
+
+tr .fluid.button {
+  box-sizing: border-box;
 }
 
 .price-cell {

@@ -38,6 +38,7 @@ module.exports = function(passport) {
         newUser.lastName = sanitizer.sanitize(req.body.lastName);
         newUser.email = sanitizer.sanitize(email);
         newUser.password = newUser.generateHash(sanitizer.sanitize(password));
+        newUser.stocks = [];
 
         // Find a user whose email is the same as the forms email
         // We are checking to see if the user trying to login already exists

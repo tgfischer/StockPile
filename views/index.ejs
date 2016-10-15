@@ -37,25 +37,81 @@
         </div>
         <div class="row">
           <div class="column">
-            <table class="ui inverted celled striped selectable listings table" cellspacing="0" width="100%">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Company Name</th>
-                  <th>Symbol</th>
-                  <!-- <th></th> -->
-                </tr>
-              </thead>
-              <tbody>
+            <div class="ui inverted segment">
+              <!--<div class="ui active dimmer">
+                <div class="ui massive text loader"></div>
+              </div>-->
+              <table class="ui inverted celled striped selectable listings table" cellspacing="0" width="100%">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Symbol</th>
+                    <th>Company Name</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
 
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <% include common/footer %>
+  </div>
+
+  <div class="ui modal">
+    <div class="header">
+      Buy <span class="stock-name"></span> (<span class="stock-symbol"></span>) Stock
+    </div>
+    <div class="content">
+      <div class="ui grid">
+        <div class="row">
+          <div class="column">
+            <form class="ui buy form" action="/dashboard/buy" method="POST">
+              <div class="two fields">
+                <div class="two wide field">
+                  <label>Price per stock</label>
+                  <p>$<span class="stock-price">115</span></p>
+                </div>
+                <div class="fourteen wide field">
+                  <label>Number of stocks to purchase</label>
+                  <input type="number" class="ui fluid input" name="numBuyStocks" value="0">
+                </div>
+              </div>
+
+              <input type="hidden" name="companyId">
+            </form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="center aligned column">
+            <div class="ui statistic">
+              <div class="value">
+                $<span class="total-cost">0</span>
+              </div>
+              <div class="label">
+                Total Cost
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="ui positive left labeled icon button">
+        Purchase
+        <i class="checkmark icon"></i>
+      </div>
+      <div class="ui black deny left labeled icon button">
+        Cancel
+        <i class="remove icon"></i>
+      </div>
+    </div>
   </div>
 
   <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -67,23 +123,90 @@
     // create sidebar and attach to menu open
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
 
+    $('input[name=numBuyStocks]').keyup(function(e) {
+      var numBuyStocksText = $('input[name=numBuyStocks]').val();
+      var costPerStock = parseFloat($('.stock-price').text());
+      var numBuyStocks = parseInt(numBuyStocksText ? numBuyStocksText : 0);
+
+      $('.total-cost').text((costPerStock * numBuyStocks));
+    });
+
+    <% if (user) { %>
+      var user = <%- JSON.stringify(user) %>;
+    <% } else { %>
+      var user = null;
+    <% } %>
+
     var listings = $('.listings').DataTable({
       serverSide: true,
+      order: [[ 1, "asc" ]],
       ajax: {
         url: '/get_listings',
         type: 'POST'
       },
       columns: [
-        { data: "_id", visible: false, searchable: false },
+        { data: "_id", visible: false, searchable: false, orderable: false },
+        { data: "symbol", title: "Symbol", className: "dt-center" },
         { data: "name", title: "Company Name" },
-        { data: "symbol", title: "Symbol" }//,
+        {
+          data: null,
+          orderable: false,
+          title: "Buy Stock",
+          className: "dt-center",
+          render: function(data, type, row, meta) {
+            return "<button class='ui fluid green buy button'>Buy</button>";
+          }
+        },
+        {
+          data: null,
+          orderable: false,
+          title: "Sell Stock",
+          className: "dt-center",
+          render: function(data, type, row, meta) {
+            return user && user.stocks.filter(function(stock) { return stock.symbol === row.symbol }) ? "<button class='ui fluid yellow sell button'>Sell</button>" : "";
+          }
+        },
         //{ data: "lastUpdated", visible: false, searchable: false }
       ]
     });
 
-    $('.listings tbody').on( 'click', 'tr', function () {
+    listings.on('processing.dt', function (e, settings, processing) {
+      if (processing) {
+        $('.ui.dimmer').addClass('active');
+      } else {
+        $('.ui.dimmer').removeClass('active');
+      }
+    });
+
+    $('.listings tbody').on('click', 'tr', function () {
       var row = listings.row(this).data();
       window.location.href = "/stock/" + row.symbol;
+    });
+
+    $('.listings tbody').on('click', 'button', function () {
+      var data = listings.row($(this).parents('tr')).data();
+
+      $('.stock-name').text(data.name);
+      $('.stock-symbol').text(data.symbol);
+      $('.stock-price').text(115);
+      $('.total-cost').text(0);
+      $('input[name=companyId]').val(data._id);
+      $('input[name=numBuyStocks]').val(0);
+      $('.ui.modal').modal({
+        onApprove : function() {
+          $('.ui.buy.form').submit(function(e) {
+            $.post('/dashboard/buy', $('.ui.buy.form').serialize(), function(json) {
+              window.location.reload();
+            });
+
+            return false;
+          });
+
+          $('.ui.buy.form').submit();
+        }
+      }).modal('show');
+
+      return false;
     });
   });
   </script>
