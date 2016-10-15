@@ -41,7 +41,7 @@
               <!--<div class="ui active dimmer">
                 <div class="ui massive text loader"></div>
               </div>-->
-              <table class="ui inverted celled striped selectable investments table" cellspacing="0" width="100%">
+              <table class="ui inverted celled striped selectable listings table" cellspacing="0" width="100%">
                 <thead>
                   <tr>
                     <th></th>
@@ -64,6 +64,8 @@
     <% include ../common/footer %>
   </div>
 
+  <% include ../common/buySellStocks %>
+
   <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" language="javascript" src="/semantic/semantic.min.js"></script>
   <script type="text/javascript" language="javascript" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
@@ -79,7 +81,7 @@
       var user = null;
     <% } %>
 
-    var investments = $('.investments').DataTable({
+    var listings = $('.listings').DataTable({
       serverSide: true,
       order: [[ 1, "asc" ]],
       ajax: {
@@ -116,10 +118,12 @@
       ]
     });
 
-    $('.investments tbody').on( 'click', 'tr', function () {
-      var row = investments.row(this).data();
+    $('.listings tbody').on( 'click', 'tr', function () {
+      var row = listings.row(this).data();
       window.location.href = "/stock/" + row.symbol;
     });
+
+    <% include ../common/buySellStocksScripts %>
   });
   </script>
 

@@ -1,0 +1,61 @@
+$('input[name=numStocks]').keyup(function(e) {
+  var numStocksText = $(this).val();
+  var costPerStock = parseFloat($('.stock-price:visible').text());
+  var numStocks = parseInt(numStocksText ? numStocksText : 0);
+
+  $('.total').text((costPerStock * numStocks));
+});
+
+$('.listings tbody').on('click', 'button.buy', function () {
+  var data = listings.row($(this).parents('tr')).data();
+
+  $('.stock-name').text(data.name);
+  $('.stock-symbol').text(data.symbol);
+  $('.stock-price').text(115);
+  $('.total').text(0);
+  $('input[name=companyId]').val(data._id);
+  $('input[name=numStocks]').val(0);
+
+  $('.ui.buy.modal').modal({
+    onApprove : function() {
+      $('.ui.buy.form').submit(function(e) {
+        $.post('/dashboard/buy', $('.ui.buy.form').serialize(), function(json) {
+          window.location.reload();
+        });
+
+        return false;
+      });
+
+      $('.ui.buy.form').submit();
+    }
+  }).modal('show');
+
+  return false;
+});
+
+$('.listings tbody').on('click', 'button.sell', function () {
+  var data = listings.row($(this).parents('tr')).data();
+
+  $('.stock-name').text(data.name);
+  $('.stock-symbol').text(data.symbol);
+  $('.stock-price').text(115);
+  $('.total').text(0);
+  $('input[name=companyId]').val(data._id);
+  $('input[name=numStocks]').val(0);
+
+  $('.ui.sell.modal').modal({
+    onApprove : function() {
+      $('.ui.sell.form').submit(function(e) {
+        $.post('/dashboard/sell', $('.ui.sell.form').serialize(), function(json) {
+          window.location.reload();
+        });
+
+        return false;
+      });
+
+      $('.ui.sell.form').submit();
+    }
+  }).modal('show');
+
+  return false;
+});

@@ -64,105 +64,7 @@
     <% include common/footer %>
   </div>
 
-  <div class="ui small buy modal">
-    <div class="header">
-      Buy <span class="stock-name"></span> (<span class="stock-symbol"></span>) Stock
-    </div>
-    <div class="content">
-      <div class="ui grid">
-        <div class="row">
-          <div class="column">
-            <form class="ui buy form" action="/dashboard/buy" method="POST">
-              <div class="two fields">
-                <div class="two wide field">
-                  <label>Price per stock</label>
-                  <p>$<span class="stock-price">115</span></p>
-                </div>
-                <div class="fourteen wide field">
-                  <label>Number of stocks to purchase</label>
-                  <input type="number" class="ui fluid input" name="numStocks" value="0">
-                </div>
-              </div>
-
-              <input type="hidden" name="companyId">
-            </form>
-          </div>
-        </div>
-        <div class="row">
-          <div class="center aligned column">
-            <div class="ui statistic">
-              <div class="value">
-                $<span class="total">0</span>
-              </div>
-              <div class="label">
-                Total Cost
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="actions">
-      <div class="ui positive left labeled icon button">
-        Purchase
-        <i class="checkmark icon"></i>
-      </div>
-      <div class="ui black deny left labeled icon button">
-        Cancel
-        <i class="remove icon"></i>
-      </div>
-    </div>
-  </div>
-
-  <div class="ui small sell modal">
-    <div class="header">
-      Sell <span class="stock-name"></span> (<span class="stock-symbol"></span>) Stock
-    </div>
-    <div class="content">
-      <div class="ui grid">
-        <div class="row">
-          <div class="column">
-            <form class="ui sell form" action="/dashboard/sell" method="POST">
-              <div class="two fields">
-                <div class="two wide field">
-                  <label>Price per stock</label>
-                  <p>$<span class="stock-price">115</span></p>
-                </div>
-                <div class="fourteen wide field">
-                  <label>Number of stocks to sell</label>
-                  <input type="number" class="ui fluid input" name="numStocks" value="0">
-                </div>
-              </div>
-
-              <input type="hidden" name="companyId">
-            </form>
-          </div>
-        </div>
-        <div class="row">
-          <div class="center aligned column">
-            <div class="ui statistic">
-              <div class="value">
-                $<span class="total">0</span>
-              </div>
-              <div class="label">
-                Total Profit
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="actions">
-      <div class="ui positive left labeled icon button">
-        Sell
-        <i class="checkmark icon"></i>
-      </div>
-      <div class="ui black deny left labeled icon button">
-        Cancel
-        <i class="remove icon"></i>
-      </div>
-    </div>
-  </div>
+  <% include common/buySellStocks %>
 
   <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" language="javascript" src="/semantic/semantic.min.js"></script>
@@ -172,14 +74,6 @@
   $(document).ready(function() {
     // create sidebar and attach to menu open
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
-
-    $('input[name=numStocks]').keyup(function(e) {
-      var numStocksText = $(this).val();
-      var costPerStock = parseFloat($('.stock-price:visible').text());
-      var numStocks = parseInt(numStocksText ? numStocksText : 0);
-
-      $('.total').text((costPerStock * numStocks));
-    });
 
     <% if (user) { %>
       var user = <%- JSON.stringify(user) %>;
@@ -242,59 +136,7 @@
       window.location.href = "/stock/" + row.symbol;
     });
 
-    $('.listings tbody').on('click', 'button.buy', function () {
-      var data = listings.row($(this).parents('tr')).data();
-
-      $('.stock-name').text(data.name);
-      $('.stock-symbol').text(data.symbol);
-      $('.stock-price').text(115);
-      $('.total').text(0);
-      $('input[name=companyId]').val(data._id);
-      $('input[name=numStocks]').val(0);
-
-      $('.ui.buy.modal').modal({
-        onApprove : function() {
-          $('.ui.buy.form').submit(function(e) {
-            $.post('/dashboard/buy', $('.ui.buy.form').serialize(), function(json) {
-              window.location.reload();
-            });
-
-            return false;
-          });
-
-          $('.ui.buy.form').submit();
-        }
-      }).modal('show');
-
-      return false;
-    });
-
-    $('.listings tbody').on('click', 'button.sell', function () {
-      var data = listings.row($(this).parents('tr')).data();
-
-      $('.stock-name').text(data.name);
-      $('.stock-symbol').text(data.symbol);
-      $('.stock-price').text(115);
-      $('.total').text(0);
-      $('input[name=companyId]').val(data._id);
-      $('input[name=numStocks]').val(0);
-
-      $('.ui.sell.modal').modal({
-        onApprove : function() {
-          $('.ui.sell.form').submit(function(e) {
-            $.post('/dashboard/sell', $('.ui.sell.form').serialize(), function(json) {
-              window.location.reload();
-            });
-
-            return false;
-          });
-
-          $('.ui.sell.form').submit();
-        }
-      }).modal('show');
-
-      return false;
-    });
+    <% include common/buySellStocksScripts %>
   });
   </script>
 
