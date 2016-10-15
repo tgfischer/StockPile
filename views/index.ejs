@@ -196,13 +196,14 @@
       },
       columns: [
         { data: "_id", visible: false, searchable: false, orderable: false },
-        { data: "symbol", title: "Symbol", className: "dt-center" },
-        { data: "name", title: "Company Name", width: "100%" },
+        { data: "symbol", title: "Symbol", className: "dt-center", width: "10%" },
+        { data: "name", title: "Company Name", width: "70%" },
         {
           data: null,
           orderable: false,
           title: "Buy Stock",
           className: "dt-center",
+          width: "10%",
           render: function(data, type, row, meta) {
             return "<button class='ui fluid green buy button'>Buy</button>";
           }
@@ -212,6 +213,7 @@
           orderable: false,
           title: "Sell Stock",
           className: "dt-center",
+          width: "10%",
           render: function(data, type, row, meta) {
             return user && user.stocks.filter(function(stock) {
               return stock.company._id === row._id
@@ -229,6 +231,11 @@
         $('.ui.dimmer').removeClass('active');
       }
     });
+
+    if (!user) {
+      listings.column(3).visible(false);
+      listings.column(4).visible(false);
+    }
 
     $('.listings tbody').on('click', 'tr', function () {
       var row = listings.row(this).data();
