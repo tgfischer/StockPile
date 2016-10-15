@@ -4,7 +4,7 @@ var Company = require('../models/Company');
 var Sentiment = require("../models/Sentiment");
 var router = express.Router();
 var request = require("request");
-var dq = require('datatables-query')
+var dq = require('datatables-query');
 
 // var API_KEY = "18bcbc1c281f1431245daff8bbc743e7469e05cc";
 var API_KEY = "7814c8d4f65421498296b5c92824b41944f81bdd";

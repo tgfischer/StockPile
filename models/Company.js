@@ -7,7 +7,8 @@ var CompanySchema = new Schema({
   open: Number,
   prevClose: Number,
   lastUpdated: Date,
-  sentiments: [{ type: Schema.Types.ObjectId, ref: 'Sentiment' }]
+  sentiments: [{ type: Schema.Types.ObjectId, ref: 'Sentiment' }],
+  stocks: [{ type: Schema.Types.ObjectId, ref: 'Stock' }]
 }, {
   collection : 'companies'
 });
