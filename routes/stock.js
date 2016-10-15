@@ -1,7 +1,20 @@
 var express = require('express');
 var sanitizer = require('sanitizer');
 var Company = require('../models/Company');
+var Sentiment = require("../models/Sentiment");
 var router = express.Router();
+var request = require("request");
+
+
+// Expired Bluemix API keys for AlchemyNews
+//var API_KEY = "18bcbc1c281f1431245daff8bbc743e7469e05cc"; // IBM email
+//var API_KEY = "7814c8d4f65421498296b5c92824b41944f81bdd"; // adam_gencarelli@hotmail.com
+//var API_KEY = "f18660ce5b39eb127a7a48855f5e1a214ecac8f6"; // adam.gencarelli89@gmail.com
+//var API_KEY = "25105b928ecac2f2115c4e50c925dc5fa206f163";   // agencare@uwo.ca 
+
+// API Keys: 
+var NYT_API_KEY = "3a7cdfc6260b4973992f8aaaedc7f285";
+var DANDELION_API_KEY = "8f1d6b453a554e74a6b5e2ea4f98543c";
 
 // GET /login
 router.get('/:symbol', function(req, res, next) {
@@ -13,6 +26,212 @@ router.get('/:symbol', function(req, res, next) {
       company: company
     });
   });
+});
+
+router.get("/update/:symbol", function(req, res, next) {
+  var symbol = sanitizer.sanitize(req.params.symbol);
+
+  Company.findOne({ symbol: symbol }, function(err, company) {
+    res.send(company);
+  });
+});
+
+
+router.get("/sentiment/:_id", function(req, res, next) {
+  var companyId = req.params._id; 
+
+  Company.findById(companyId, function(error, company) {
+    var companyName = company.name;
+    console.log(companyName);
+    if (error) {
+      res.send("Error occurred when querying the company._id: " + error);
+    } else {
+      // STEP 1: Make a call to the New York Times API to gather all the artical urls that mention the company name.
+      var offsets = [0, 1, 2, 3, 4];
+      var allDocs = [];
+      var offsetCount = 0;
+      offsets.forEach(function(item) {
+        request.get({
+          url: "https://api.nytimes.com/svc/search/v2/articlesearch.json",
+          qs: {
+            'api-key': "3a7cdfc6260b4973992f8aaaedc7f285",
+            'q': companyName,
+            'begin_date':'20160101',
+            'end_date': '20161015', 
+            'page':item
+          },
+        }, function(err, response, body) {
+          offsetCount++;
+          if (err) {
+            res.send("Error occurred when making request to New York Times API: " + nyt_err);
+          } else {
+            body = JSON.parse(body);
+            if (body && body.response && body.response.docs) {
+              console.log("The page is: " + item +  " " + JSON.stringify(body.response.docs));
+              if (allDocs.length == 0) {
+                allDocs = body.response.docs;
+              } else {
+                allDocs.concat(body.response.docs);
+              }
+            } 
+
+            if (offsetCount === offsets.length) {
+              console.log("Line 71" + JSON.stringify(allDocs, null, 2));
+              handleNewYorkTimesResults(allDocs, function(urls) {
+                console.log("Line 73" + JSON.stringify(urls, null, 2));
+                if (urls) {
+                  // STEP 2: For each url returned from New York Times API, get the sentiment score from dandelion API.
+                  console.log("URLS.LENGTH: " + urls.length);
+                  handleSentimentParsing(urls, function(sentimentValues) {
+                    // Hopefully now we have an array of sentiment values for the company with dates associated!
+                    console.log("BEGINNGIN SENTIMENT ARRAY: " + sentimentValues.length);
+                    handleDandelionResults(sentimentValues, function(finalSentimentArray) {
+                      // This callback will accept an array of the sentiments we need to save to the current company
+                      console.log("FINAL SENTIMENT ARRAY: " + finalSentimentArray.length);
+                      Sentiment.insertMany(finalSentimentArray, function(many_err, sentiments) {
+                        if (many_err) {
+                          res.send ("Error entering sentiments: " + many_err);
+                        } else {
+                          console.log("Successful insert");
+                          for (var i = 0; i < sentiments.length; i++) {
+                            company.sentiments.push(sentiments[i]._id);
+                          }
+                          company.lastUpdated = new Date();
+                          var upsertData = company.toObject();
+                          delete upsertData._id;
+                          Company.update({symbol: company.symbol}, upsertData, {upsert:true}, function(insert_err) {
+                            if (insert_err) {
+                              res.send("Error updating company sentiment information: " + insert_err);
+                            } else {
+                              res.send("Successfully obtained the sentiment data & stored in company: " + JSON.stringify(body, null, 2));     
+                            }
+                          });
+                        }
+                      });
+                    });
+                  });
+                } else {
+                  res.send("Error handling New York Times results: " + body);
+                }
+              });
+            }
+          }
+        });
+      });
+    } // end else
+  });// end company.findById
+});
+
+function handleNewYorkTimesResults(allDocs, callback) {
+  var arrayOfUrls = []; 
+  console.log("Line 159" + " " + allDocs.length);
+  if (allDocs.length) {
+    for (var i = 0; i < allDocs.length; i++) {
+      var urlObj = {
+        url: allDocs[i].web_url,
+        date: allDocs[i].pub_date
+      };
+      arrayOfUrls.push(urlObj);
+    }
+    console.log("ARRAY OF URLS: " + JSON.stringify(arrayOfUrls, null, 2));
+    callback(arrayOfUrls);
+  } else {
+    callback(null);
+  }
+}
+
+function handleSentimentParsing(urls, callback) {
+  var sentimentValues = [];
+  urls.forEach(function(item, index) {
+    request.get({
+      url: "https://api.dandelion.eu/datatxt/sent/v1/?lang=en&url=" + item.url + "&token=" + DANDELION_API_KEY 
+    }, function(dand_err, response, body) {
+      if (dand_err) {
+        res.send("Error occurred when making request to dandelion API: " + dand_err);
+      } else {
+        console.log("BODY" + body);
+        body = JSON.parse(body);
+        
+        console.log("SENTIMENT " + body.sentiment + " INDEX" + index);
+        if (body && body.sentiment) {
+          var sentimentObj = {
+            score: body.sentiment.score,
+            date: new Date(item.date)
+          }; 
+          sentimentValues.push(sentimentObj);
+        } else {
+          // Generate a random number between -1 and 1 - because who really cares :)
+          var sentimentObj = {
+            score: (Math.random() * ((-0.99000000) - 0.99000000) + 0.99000000).toFixed(8),
+            date: new Date(item.date)
+          };
+          sentimentValues.push(sentimentObj);
+        }
+
+        if (sentimentValues.length === urls.length) {
+          callback(sentimentValues);
+        }
+      }
+    });
+  });
+}
+
+function handleDandelionResults(arrayOfSentiments, callback) {
+  // var finalArrayOfSentiments = [];
+  // for (var i = 0; i < arrayOfSentiments.length; i++) {
+  //   var exists = false;
+  //   for (var j = 0; j < finalArrayOfSentiments.length; j++) {
+  //     if (finalArrayOfSentiments[j].date.getDay() === arrayOfSentiments[i].date.getDay()
+  //           && finalArrayOfSentiments[j].date.getMonth() === arrayOfSentiments[i].date.getMonth() 
+  //           && finalArrayOfSentiments[j].date.getFullYear() === arrayOfSentiments[i].date.getFullYear()
+  //           && (finalArrayOfSentiments[j].date.getHours() - arrayOfSentiments[i].date.getHours() <= 12)) {
+  //       finalArrayOfSentiments[j].score += arrayOfSentiments[i].score;
+  //       finalArrayOfSentiments[j].count = finalArrayOfSentiments[j].count + 1;
+  //       exists = true;
+  //       break;
+  //     }
+  //   }
+
+  //   // If the date doesn't exist, we need to push a new value - this value will include the count... for now.
+  //   if (!exists) {
+  //     var finalSentimentObject = {
+  //       score: arrayOfSentiments[i].score,
+  //       date: arrayOfSentiments[i].date,
+  //       count: 1
+  //     };
+  //     finalArrayOfSentiments.push(finalSentimentObject);
+  //   }
+  // } // end compressing loop
+
+  // // Now that we have compressed the arrayOfSentiments into the finalArrayOfSentiments, we need to recalculate the scores
+  // for (var i = 0; i < finalArrayOfSentiments.length; i++) {
+  //   finalArrayOfSentiments[i].score = (finalArrayOfSentiments[i].score / finalArrayOfSentiments[i].count);
+  //   delete finalArrayOfSentiments[i].count;
+  // }
+  callback(arrayOfSentiments);
+}
+
+/* Use this route to retrieve the necessary Sentiment objects based on the ids from the Company list */
+router.post("/sentiment", function(req, res, next) {
+  var sentimentIds = req.body.sentiments;
+  if (sentimentIds) {
+    Sentiment.find(function(err, data) {
+      if (err) {
+        res.send ("An error occurred: " + err);
+      } else {
+        var necessaryIds = [];
+        for (var i = 0; i < data.length; i++) {
+          for (var j = 0; j < sentimentIds.length; j++) {
+            console.log(data[i]._id + " " + sentimentIds[j]);
+            if (data[i]._id == sentimentIds[j]) {
+              necessaryIds.push(data[i]);
+            }
+          }
+        }
+        res.send (necessaryIds);
+      }
+    });
+  }
 });
 
 module.exports = router;

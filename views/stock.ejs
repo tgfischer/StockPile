@@ -21,7 +21,6 @@
     <div class="ui inverted vertical segment">
       <% include common/nav %>
     </div>
-
     <div class="ui main vertical inverted stripe segment">
       <div class="ui middle aligned stackable grid container">
         <div class="row">
@@ -42,15 +41,23 @@
         </div>
         <div class="row">
           <div class="title column">
+            <div id="graph-loader" class="ui big text active loader">Analyzing News...</div>
             <canvas class="chart"></canvas>
           </div>
         </div>
       </div>
     </div>
-
     <% include common/footer %>
   </div>
-
+  <script>
+    // The following converts the "company" variable which this page is specific for, into a JavaScript variable to be used in the script.
+    function htmlDecode(input){
+      var e = document.createElement('div');
+      e.innerHTML = input;
+      return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+    var comp = JSON.parse(htmlDecode("<%= JSON.stringify(company) %>"));
+  </script>
   <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" language="javascript" src="/semantic/semantic.min.js"></script>
   <script type="text/javascript" language="javascript" src="/js/chart.min.js"></script>
@@ -59,105 +66,126 @@
     // create sidebar and attach to menu open
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
 
+    // Make request to server for the
     Chart.defaults.global.defaultFontColor = "#FFFFFF";
     Chart.defaults.global.defaultFontSize = 15;
 
-    var ctx = $('.chart');
-    var chart = Chart.Line(ctx, {
-      data: {
-        datasets: [{
-          label: 'Scatter Dataset',
-          fill: false,
-          borderColor: 'rgba(183, 28, 28, 1)',
-          pointBorderColor: 'rgba(239, 83, 80, 1)',
-          pointBackgroundColor: 'rgba(239, 83, 80, 1)',
-          data: [{
-            x: 0,
-            y: 3
-          }, {
-            x: 1,
-            y: 5
-          }, {
-            x: 2,
-            y: 2
-          }, {
-            x: 3,
-            y: 1
-          }, {
-            x: 4,
-            y: 6
-          }, {
-            x: 5,
-            y: 0
-          }, {
-            x: 6,
-            y: -1
-          }, {
-            x: 7,
-            y: -2
-          }, {
-            x: 8,
-            y: 0
-          }, {
-            x: 9,
-            y: 1
-          }, {
-            x: 10,
-            y: -1
-          }, {
-            x: 11,
-            y: -3
-          }, {
-            x: 12,
-            y: 2
-          }, {
-            x: 13,
-            y: 6
-          }, {
-            x: 14,
-            y: 6
-          }, {
-            x: 15,
-            y: 8
-          }, {
-            x: 16,
-            y: 5
-          }, {
-            x: 17,
-            y: 6
-          }, {
-            x: 18,
-            y: 5
-          }, {
-            x: 19,
-            y: 4
-          }]
-        }]
-      },
-      options: {
-        animation: false,
-        scales: {
-          xAxes: [{
-            type: 'linear',
-            position: 'bottom',
-            gridLines: {
-              color: 'rgba(255, 255, 255, 0.05)',
-              zeroLineColor: 'rgba(255, 255, 255, 0.15)'
+    // First thing we should do is check this company's "lastUpdated" field. If it is more than a day old, we should redo the 
+    // sentiment query and add recent results. When result is true, we need to get more sentiment results.
+    consultLastUpdated(comp, function() {
+      renderGraphData(comp, function(renderData) {
+        console.log(renderData);
+        var ctx = $('.chart');
+        var chart = Chart.Line(ctx, {
+          data: {
+            datasets: [{
+              label: 'Scatter Dataset',
+              fill: true,
+              borderColor: 'rgba(183, 28, 28, 1)',
+              pointBorderColor: 'rgba(239, 83, 80, 1)',
+              pointBackgroundColor: 'rgba(239, 83, 80, 1)',
+              data: renderData
+            }]
+          },
+          options: {
+            lineTension: 0,
+            animation: false,
+            scales: {
+              xAxes: [{
+                type: 'linear',
+                position: 'bottom',
+                gridLines: {
+                  color: 'rgba(255, 255, 255, 0.05)',
+                  zeroLineColor: 'rgba(255, 255, 255, 0.15)'
+                }
+              }],
+              yAxes: [{
+                gridLines: {
+                  color: 'rgba(255, 255, 255, 0.05)',
+                  zeroLineColor: 'rgba(255, 255, 255, 0.15)'
+                }
+              }]
+            },
+            legend: {
+              display: false
             }
-          }],
-          yAxes: [{
-            gridLines: {
-              color: 'rgba(255, 255, 255, 0.05)',
-              zeroLineColor: 'rgba(255, 255, 255, 0.15)'
-            }
-          }]
-        },
-        legend: {
-          display: false
+          }
+        });
+      });   // end renderGraphData callback
+    });     // end consultLastUpdated callback   
+  });       // end document ready
+
+  function consultLastUpdated(comp, callback) {
+    var update = false;
+    var lastUpdated = comp.lastUpdated;
+    if (!lastUpdated) {
+      update = true; // lastUpdated will be null if we have never updated the sentiment results
+    } else {
+      lastUpdated = new Date(lastUpdated);
+      // If lastUpdated exists, we must compare it with the current time. If time > 1 day, return true to get some new results
+      var currentDate = new Date();
+
+      var timeDiff = Math.abs(currentDate.getTime() - lastUpdated.getTime());
+      var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+      
+      if (diffDays > 1) {
+        update = true;
+      } else {
+        update = false;
+      }
+    }
+
+    if (update) {
+      $.ajax({
+        url: "/stock/sentiment/" + comp._id,
+        method: "GET",
+        success: function(data) {
+          // if (data) {
+          //   console.log("The company: " + comp.symbol + " was populated with sentiment data! ");
+          //   console.log(data);
+          // } else {
+          //   console.log("Failure");
+          // }
+          $("#graph-loader").removeClass("active");
+          callback();
         }
+      });
+    } else {
+      $("#graph-loader").removeClass("active");
+      callback();
+    }
+  }
+
+  function renderGraphData(comp, callback) {
+    $.ajax({
+      url:"/stock/update/" + comp.symbol,
+      method: "GET",
+      success: function(newCompany) {
+        $.ajax({
+          url: "/stock/sentiment",
+          method: "POST",
+          data: {
+            sentiments: newCompany.sentiments
+          }, 
+          success: function (sentiments) {
+            console.log(sentiments);
+            var company_data = []; 
+            
+            // Do a for loop here
+            for (var i = 0; i < sentiments.length; i++) {
+              var temp = {
+                x: i,
+                y: sentiments[i].score
+              };
+              company_data.push(temp);
+            }
+            console.log(company_data.length);
+            callback(company_data);
+          }
+        });
       }
     });
-  });
+  }
   </script>
 
 </body>
