@@ -1,21 +1,29 @@
-<div class="ui small buy modal">
-  <div class="header">
+<div class="ui small success coupled modal">
+  <div class="regular-text header">
+    Success!
+  </div>
+  <div class="content">
+    <p class="message"></p>
+  </div>
+  <div class="actions">
+    <div class="ui basic positive button">
+      OK
+    </div>
+  </div>
+</div>
+
+<div class="ui small buy coupled modal">
+  <div class="regular-text header">
     Buy <span class="stock-name"></span> (<span class="stock-symbol"></span>) Stock
   </div>
   <div class="content">
     <div class="ui grid">
       <div class="row">
         <div class="column">
-          <form class="ui buy form" action="/dashboard/buy" method="POST">
-            <div class="two fields">
-              <div class="two wide field">
-                <label>Price per stock</label>
-                <p>$<span class="stock-price">115</span></p>
-              </div>
-              <div class="fourteen wide field">
-                <label>Number of stocks to purchase</label>
-                <input type="number" class="ui fluid input" name="numStocks" value="0">
-              </div>
+          <form class="ui large buy form" action="/dashboard/buy" method="POST">
+            <div class="field">
+              <label class="regular-text">Number of stocks to purchase</label>
+              <input type="number" class="ui fluid input" name="numStocks" value="0">
             </div>
 
             <input type="hidden" name="companyId">
@@ -23,13 +31,33 @@
         </div>
       </div>
       <div class="row">
-        <div class="center aligned column">
-          <div class="ui statistic">
+        <div class="ten wide column">
+          <div class="ui statistics">
+            <div class="ui statistic">
+              <div class="value">
+                <span class="stock-owned">0</span>
+              </div>
+              <div class="label">
+                Stocks Currently Owned
+              </div>
+            </div>
+            <div class="ui statistic">
+              <div class="value">
+                $<span class="stock-price">115</span>
+              </div>
+              <div class="label">
+                Price Per Stock
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="six wide right aligned column">
+          <div class="ui regular-text statistic">
             <div class="value">
               $<span class="total">0</span>
             </div>
             <div class="label">
-              Total Cost
+              Total Cost of Purchase
             </div>
           </div>
         </div>
@@ -48,24 +76,18 @@
   </div>
 </div>
 
-<div class="ui small sell modal">
-  <div class="header">
+<div class="ui small sell coupled modal">
+  <div class="regular-text header">
     Sell <span class="stock-name"></span> (<span class="stock-symbol"></span>) Stock
   </div>
   <div class="content">
     <div class="ui grid">
       <div class="row">
         <div class="column">
-          <form class="ui sell form" action="/dashboard/sell" method="POST">
-            <div class="two fields">
-              <div class="two wide field">
-                <label>Price per stock</label>
-                <p>$<span class="stock-price">115</span></p>
-              </div>
-              <div class="fourteen wide field">
-                <label>Number of stocks to sell</label>
-                <input type="number" class="ui fluid input" name="numStocks" value="0">
-              </div>
+          <form class="ui large sell form" action="/dashboard/sell" method="POST">
+            <div class="field">
+              <label class="regular-text">Number of stocks to sell</label>
+              <input type="number" class="ui fluid input" name="numStocks" value="0">
             </div>
 
             <input type="hidden" name="companyId">
@@ -73,13 +95,33 @@
         </div>
       </div>
       <div class="row">
-        <div class="center aligned column">
-          <div class="ui statistic">
+        <div class="ten wide column">
+          <div class="ui statistics">
+            <div class="ui statistic">
+              <div class="value">
+                <span class="stock-owned">0</span>
+              </div>
+              <div class="label">
+                Stocks Currently Owned
+              </div>
+            </div>
+            <div class="ui statistic">
+              <div class="value">
+                $<span class="stock-price">115</span>
+              </div>
+              <div class="label">
+                Price Per Stock
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="six wide right aligned column">
+          <div class="ui regular-text statistic">
             <div class="value">
               $<span class="total">0</span>
             </div>
             <div class="label">
-              Total Profit
+              Total Profit From Sale
             </div>
           </div>
         </div>
