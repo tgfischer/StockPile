@@ -6,17 +6,18 @@ var router = express.Router();
 var request = require("request"); 
 var dq = require('datatables-query')
 
-var API_KEY = "18bcbc1c281f1431245daff8bbc743e7469e05cc";
+// var API_KEY = "18bcbc1c281f1431245daff8bbc743e7469e05cc";
+var API_KEY = "7814c8d4f65421498296b5c92824b41944f81bdd";
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  /*
+  
   Company.insertMany(listings, function(err, companies) {
     res.render('index', {
       companies: companies
     });
   });
-  */
+  
   res.render('index');
 });
 
@@ -42,7 +43,8 @@ router.get("/news/:_id", function(req, res, next) {
     the request, and then also use the company _id when saving the sentimentArray into the correct company. Use a callback
     after getting the full array of sentiment data to execute the save all and company save. */
   var handleResponse = function(err, response, body, callback) {
-    var arrayOfSentiments = [];
+    var arrayOfSentiments = [];       // every sentiment returned, as depicted with date and score
+    var finalArrayOfSentiments = [];      // this will be the tempArrayOfSentiments compressed by day
     if (err) {
       res.send ("An error occurred: " + err);
     } else {
@@ -71,8 +73,41 @@ router.get("/news/:_id", function(req, res, next) {
             arrayOfSentiments.push(sentimentObject);
           }
         }
-        callback(arrayOfSentiments);
-      } 
+          
+        /* After there has been all the sentiments pushed into the array of sentiments, let's compress this array to each day.
+          When running through the array, check what the date is. If it matches a current entry, modify the score of that entry.
+          If it does not match, create a new entry. */  
+        for (var i = 0; i < arrayOfSentiments.length; i++) {
+          var exists = false;
+          for (var j = 0; j < finalArrayOfSentiments.length; j++) {
+            if (finalArrayOfSentiments[j].date.getDay() === arrayOfSentiments[i].date.getDay()
+                  && finalArrayOfSentiments[j].date.getMonth() === arrayOfSentiments[i].date.getMonth() 
+                  && finalArrayOfSentiments[j].date.getFullYear() === arrayOfSentiments[i].date.getFullYear()) {
+              finalArrayOfSentiments[j].score += arrayOfSentiments[i].score;
+              finalArrayOfSentiments[j].count = finalArrayOfSentiments[j].count + 1;
+              exists = true;
+              break;
+            }
+          }
+
+          // If the date doesn't exist, we need to push a new value - this value will include the count... for now.
+          if (!exists) {
+            var finalSentimentObject = {
+              score: arrayOfSentiments[i].score,
+              date: arrayOfSentiments[i].date,
+              count: 1
+            };
+            finalArrayOfSentiments.push(finalSentimentObject);
+          }
+        }
+
+        // Now that we have compressed the arrayOfSentiments into the finalArrayOfSentiments, we need to recalculate the scores
+        for (var i = 0; i < finalArrayOfSentiments.length; i++) {
+          finalArrayOfSentiments[i].score = (finalArrayOfSentiments[i].score / finalArrayOfSentiments[i].count);
+          delete finalArrayOfSentiments[i].count;
+        }
+        callback(finalArrayOfSentiments); 
+      } // end first if
     }
   };
 
@@ -113,7 +148,6 @@ router.get("/news/:_id", function(req, res, next) {
       });
     }); 
   });
-
 
 
 module.exports = router;
