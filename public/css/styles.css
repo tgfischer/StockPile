@@ -1,3 +1,12 @@
+.ui.inverted.breadcrumb i,
+.ui.inverted.breadcrumb a {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.ui.inverted.breadcrumb a:hover {
+  color: rgba(255, 255, 255, 0.3);
+}
+
 .ui.secondary.inverted.pointing.menu {
   border: none !important;
 }
@@ -6,7 +15,7 @@
   margin-left: 0.5em;
 }
 
-.inverted .ui.input {
+.inverted .ui.dataTables_filter.input {
   color: white;
 }
 
@@ -22,9 +31,6 @@
 
 .hidden.menu {
   display: none;
-}
-.ui.vertical.stripe {
-  padding: 8em 0em;
 }
 .ui.vertical.stripe h3 {
   font-size: 2em;

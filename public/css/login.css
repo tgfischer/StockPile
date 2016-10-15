@@ -1,6 +1,3 @@
-body {
-  background-color: #DADADA;
-}
 body > .grid {
   height: 100%;
 }
@@ -8,5 +5,5 @@ body > .grid {
   margin-top: -100px;
 }
 .column {
-  max-width: 450px;
+  max-width: 650px;
 }

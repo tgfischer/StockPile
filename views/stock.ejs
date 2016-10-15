@@ -40,6 +40,11 @@
             </h1>
           </div>
         </div>
+        <div class="row">
+          <div class="title column">
+            <canvas class="chart"></canvas>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -48,10 +53,110 @@
 
   <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" language="javascript" src="/semantic/semantic.min.js"></script>
+  <script type="text/javascript" language="javascript" src="/js/chart.min.js"></script>
   <script>
   $(document).ready(function() {
     // create sidebar and attach to menu open
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
+
+    Chart.defaults.global.defaultFontColor = "#FFFFFF";
+    Chart.defaults.global.defaultFontSize = 15;
+
+    var ctx = $('.chart');
+    var chart = Chart.Line(ctx, {
+      data: {
+        datasets: [{
+          label: 'Scatter Dataset',
+          fill: false,
+          borderColor: 'rgba(183, 28, 28, 1)',
+          pointBorderColor: 'rgba(239, 83, 80, 1)',
+          pointBackgroundColor: 'rgba(239, 83, 80, 1)',
+          data: [{
+            x: 0,
+            y: 3
+          }, {
+            x: 1,
+            y: 5
+          }, {
+            x: 2,
+            y: 2
+          }, {
+            x: 3,
+            y: 1
+          }, {
+            x: 4,
+            y: 6
+          }, {
+            x: 5,
+            y: 0
+          }, {
+            x: 6,
+            y: -1
+          }, {
+            x: 7,
+            y: -2
+          }, {
+            x: 8,
+            y: 0
+          }, {
+            x: 9,
+            y: 1
+          }, {
+            x: 10,
+            y: -1
+          }, {
+            x: 11,
+            y: -3
+          }, {
+            x: 12,
+            y: 2
+          }, {
+            x: 13,
+            y: 6
+          }, {
+            x: 14,
+            y: 6
+          }, {
+            x: 15,
+            y: 8
+          }, {
+            x: 16,
+            y: 5
+          }, {
+            x: 17,
+            y: 6
+          }, {
+            x: 18,
+            y: 5
+          }, {
+            x: 19,
+            y: 4
+          }]
+        }]
+      },
+      options: {
+        animation: false,
+        scales: {
+          xAxes: [{
+            type: 'linear',
+            position: 'bottom',
+            gridLines: {
+              color: 'rgba(255, 255, 255, 0.05)',
+              zeroLineColor: 'rgba(255, 255, 255, 0.15)'
+            }
+          }],
+          yAxes: [{
+            gridLines: {
+              color: 'rgba(255, 255, 255, 0.05)',
+              zeroLineColor: 'rgba(255, 255, 255, 0.15)'
+            }
+          }]
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
   });
   </script>
 
