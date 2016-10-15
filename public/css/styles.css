@@ -1,3 +1,7 @@
+.padding-right {
+  padding-right: 15px;
+}
+
 .ui.inverted.breadcrumb i,
 .ui.inverted.breadcrumb a {
   color: rgba(255, 255, 255, 0.2);
@@ -23,6 +27,7 @@
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+  background: #1B1C1D !important;
 }
 
 .main {
@@ -63,10 +68,6 @@
 
 .secondary.pointing.menu .toc.item {
   display: none;
-}
-
-body {
-  background: #1B1C1D;
 }
 
 .dataTable tbody tr {

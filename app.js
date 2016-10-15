@@ -53,11 +53,13 @@ var index = require('./routes/index');
 var stock = require('./routes/stock');
 var login = require('./routes/login');
 var signup = require('./routes/signup');
+var logout = require('./routes/logout');
 
 app.use('/', index);
 app.use('/stock', stock);
 app.use('/login', login);
 app.use('/signup', signup);
+app.use('/logout', logout);
 
 /* Start the server
 ------------------------------------------------------ */

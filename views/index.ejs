@@ -73,15 +73,7 @@
 
     $('.listings tbody').on( 'click', 'tr', function () {
       var row = table.row(this).data();
-
       window.location.href = "/stock/" + row.symbol;
-      /*if ($(this).hasClass('selected')) {
-        $(this).removeClass('selected');
-      }
-      else {
-        table.$('tr.selected').removeClass('selected');
-        $(this).addClass('selected');
-      }*/
     });
   });
   </script>

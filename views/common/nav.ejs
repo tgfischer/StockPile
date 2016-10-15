@@ -5,8 +5,13 @@
     </a>
     <a href="/" class="active item">Home</a>
     <div class="right item">
-      <a href="/login" class="ui inverted button">Log in</a>
-      <a href="/signup" class="ui inverted button">Sign Up</a>
+      <% if (user) { %>
+        <span class="padding-right">Welcome back <b><%= user.firstName %></b></span>
+        <a href="/logout" class="ui inverted button">Log out</a>
+      <% } else { %>
+        <a href="/login" class="ui inverted button">Log in</a>
+        <a href="/signup" class="ui inverted button">Sign Up</a>
+      <% } %>
     </div>
   </div>
 </div>
