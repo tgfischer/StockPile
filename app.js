@@ -46,7 +46,12 @@ app.use(function(req, res, next) {
   var user = req.user;
 
   if (user) {
-    user.populate('stocks', function(err, stock) {
+    user.populate({
+      path: 'stocks',
+      populate: {
+        path: 'company'
+      }
+    }, function(err, stocks) {
       res.locals.user = user;
       next();
     });

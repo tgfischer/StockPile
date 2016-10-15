@@ -163,7 +163,9 @@
           title: "Sell Stock",
           className: "dt-center",
           render: function(data, type, row, meta) {
-            return user && user.stocks.filter(function(stock) { return stock.symbol === row.symbol }) ? "<button class='ui fluid yellow sell button'>Sell</button>" : "";
+            return user && user.stocks.filter(function(stock) {
+              return stock.company._id === row._id
+            }).length > 0 ? "<button class='ui fluid yellow sell button'>Sell</button>" : "";
           }
         },
         //{ data: "lastUpdated", visible: false, searchable: false }
@@ -192,6 +194,7 @@
       $('.total-cost').text(0);
       $('input[name=companyId]').val(data._id);
       $('input[name=numBuyStocks]').val(0);
+
       $('.ui.modal').modal({
         onApprove : function() {
           $('.ui.buy.form').submit(function(e) {

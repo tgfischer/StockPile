@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
 router.post('/get_listings', function(req, res, next) {
   var query = dq(Company);
 
-  console.log(JSON.stringify(req.body, null, 2));
+  // console.log(JSON.stringify(req.body, null, 2));
 
   query.run(req.body).then(function(data) {
     // TODO: Check the last time the company's information was updated. If greater
