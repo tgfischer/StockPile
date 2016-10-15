@@ -14,10 +14,10 @@ var bluebird = require('bluebird');
 // Create a new express server
 var app = express();
 
-/* mongoose.connect("mongodb://root:stockpile@ds033036.mlab.com:33036/stockpile", {
+mongoose.connect("mongodb://root:babybear@ds013202.mlab.com:13202/stockpile", {
   promiseLibrary: bluebird
 });
-require('./config/passport')(passport); */
+require('./config/passport')(passport);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
