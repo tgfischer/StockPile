@@ -83,7 +83,8 @@ router.post('/sell', Auth.isLoggedIn, function(req, res, next) {
       _id: {
         $in: ids
       }
-    }, function (err) {
+    }, function (err, removed) {
+      console.log(JSON.stringify(removed.result.documents, null, 2));
       User.update({
         _id: req.user._id
       }, {
@@ -95,12 +96,13 @@ router.post('/sell', Auth.isLoggedIn, function(req, res, next) {
       }, {
         upsert: true
       }, function(err) {
+        console.log()
         Company.update({
           _id: sanitizer.sanitize(req.body.companyId)
         }, {
           $pull: {
             stocks: {
-              $each: ids
+              $in: ids
             }
           }
         }, {

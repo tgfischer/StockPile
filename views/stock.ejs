@@ -43,10 +43,10 @@
         <% if (user) { %>
           <div class="row">
             <div class="three wide column">
-              <button class="ui large fluid green inverted button">Buy</button>
+              <button class="ui large fluid green inverted buy button">Buy</button>
             </div>
             <div class="three wide column">
-              <button class="ui large fluid yellow inverted button">Sell</button>
+              <button class="ui large fluid yellow inverted sell button">Sell</button>
             </div>
           </div>
         <% } %>
@@ -61,6 +61,8 @@
     <% include common/footer %>
   </div>
 
+  <% include common/buySellStocks %>
+
   <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" language="javascript" src="/semantic/semantic.min.js"></script>
   <script type="text/javascript" language="javascript" src="/js/chart.min.js"></script>
@@ -68,6 +70,8 @@
   $(document).ready(function() {
     // create sidebar and attach to menu open
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
+
+    <% include common/buySellStocksScripts %>
 
     Chart.defaults.global.defaultFontColor = "#FFFFFF";
     Chart.defaults.global.defaultFontSize = 15;
