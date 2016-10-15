@@ -50,8 +50,12 @@ app.use(function(req, res, next) {
 /* Set up the routes
 ------------------------------------------------------ */
 var index = require('./routes/index');
+var login = require('./routes/login');
+var signup = require('./routes/signup');
 
 app.use('/', index);
+app.use('/login', login);
+app.use('/signup', signup);
 
 /* Start the server
 ------------------------------------------------------ */
