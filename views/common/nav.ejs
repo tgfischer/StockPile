@@ -3,15 +3,15 @@
     <a class="toc item">
       <i class="sidebar icon"></i>
     </a>
-    <a href="/" class="active item">Home</a>
+    <a href="/" class="ui big header item">STOCK PILE</a>
     <div class="right item">
       <% if (user) { %>
         <span class="padding-right">Welcome back <b><%= user.firstName %></b></span>
-        <a href="/dashboard" class="ui inverted button">Dashboard</a>
-        <a href="/logout" class="ui inverted button">Log out</a>
+        <a href="/dashboard" class="ui inverted button">PORTFOLIO</a>
+        <a href="/logout" class="ui inverted button">LOG OUT</a>
       <% } else { %>
-        <a href="/login" class="ui inverted button">Log in</a>
-        <a href="/signup" class="ui inverted button">Sign up</a>
+        <a href="/login" class="ui inverted button">LOG IN</a>
+        <a href="/signup" class="ui inverted button">SIGN UP</a>
       <% } %>
     </div>
   </div>

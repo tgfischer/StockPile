@@ -25,22 +25,23 @@
 
     <div class="ui main vertical inverted stripe segment container">
       <div class="ui middle aligned stackable grid">
-        <div class="row">
-          <div class="title column">
+        <div class="middle aligned row">
+          <div class="fourteen wide title column">
             <h1 class="ui inverted huge header">
-              Stock Pile
+              NASDAQ
               <div class="sub header">
-                Browse the stocks listed below to determine each company's sentiment. The information is gathered from articles across the internet
+                Browse the some of the most popular stocks in the NASDAQ listed below. A sentiment is calculated for each company, which
+                might help you decide if that compant would be a good investment
               </div>
             </h1>
+          </div>
+          <div class="two wide column">
+            <div class="ui massive inverted active centered inline loader"></div>
           </div>
         </div>
         <div class="row">
           <div class="column">
             <div class="ui inverted segment">
-              <!--<div class="ui active dimmer">
-                <div class="ui massive text loader"></div>
-              </div>-->
               <table class="ui inverted celled striped selectable listings table" cellspacing="0" width="100%">
                 <thead>
                   <tr>
@@ -111,7 +112,7 @@
           render: function(data, type, row, meta) {
             return user && user.stocks.filter(function(stock) {
               return stock.company._id === row._id
-            }).length > 0 ? "<button class='ui fluid yellow sell button'>Sell</button>" : "";
+            }).length > 0 ? "<button class='ui fluid secondary sell button'>Sell</button>" : "<button class='ui fluid secondary disabled sell button'>Sell</button>";
           }
         },
         //{ data: "lastUpdated", visible: false, searchable: false }
@@ -120,9 +121,9 @@
 
     listings.on('processing.dt', function (e, settings, processing) {
       if (processing) {
-        $('.ui.dimmer').addClass('active');
+        $('.ui.inline.loader').addClass('active');
       } else {
-        $('.ui.dimmer').removeClass('active');
+        $('.ui.inline.loader').removeClass('active');
       }
     });
 

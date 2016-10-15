@@ -26,13 +26,24 @@
     <div class="ui main vertical inverted stripe segment container">
       <div class="ui middle aligned stackable grid">
         <div class="row">
-          <div class="title column">
+          <div class="column">
+            <div class="ui inverted breadcrumb">
+              <i class="left chevron icon divider"></i>
+              <a href="/" class="section">Back</a>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="fourteen wide title column">
             <h1 class="ui inverted huge header">
               Your Portfolio
               <div class="sub header">
-                Here are the stocks that you have invested in
+
               </div>
             </h1>
+          </div>
+          <div class="two wide column">
+            <div class="ui massive inverted active centered inline loader"></div>
           </div>
         </div>
         <div class="row">
@@ -109,9 +120,7 @@
           className: "dt-center",
           width: "10%",
           render: function(data, type, row, meta) {
-            return user && user.stocks.filter(function(stock) {
-              return stock.company._id === row._id
-            }).length > 0 ? "<button class='ui fluid yellow sell button'>Sell</button>" : "";
+            return "<button class='ui fluid secondary sell button'>Sell</button>";
           }
         },
         //{ data: "lastUpdated", visible: false, searchable: false }
@@ -121,6 +130,14 @@
     $('.listings tbody').on( 'click', 'tr', function () {
       var row = listings.row(this).data();
       window.location.href = "/stock/" + row.symbol;
+    });
+
+    listings.on('processing.dt', function (e, settings, processing) {
+      if (processing) {
+        $('.ui.inline.loader').addClass('active');
+      } else {
+        $('.ui.inline.loader').removeClass('active');
+      }
     });
 
     <% include ../common/buySellStocksScripts %>
