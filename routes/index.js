@@ -1,4 +1,6 @@
 var express = require('express');
+var listings = require('../config/nasdaq-listing');
+var Company = require('../models/Company');
 var router = express.Router();
 var request = require("request"); 
 var moment = require("moment");
@@ -8,7 +10,18 @@ var API_KEY = "18bcbc1c281f1431245daff8bbc743e7469e05cc";
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  /*
+  Company.insertMany(listings, function(err, companies) {
+    res.render('index', {
+      companies: companies
+    });
+  });
+  */
+  Company.find({ }, 'name symbol', function(err, companies) {
+    res.render('index', {
+      companies: companies
+    });
+  });
 });
 
 /* GET sentiment data for 'company' */
