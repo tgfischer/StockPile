@@ -35,7 +35,7 @@ router.post('/get_listings', function(req, res, next) {
 
 /* GET sentiment data for 'company' */
 router.get("/news", function(req, res, next) {
-  var requestURI = "https://access.alchemyapi.com/calls/data/GetNews?apikey=" + API_KEY + "&return=enriched.url.title,enriched.url.enrichedTitle.docSentiment&start=now-7d&end=now&q.enriched.url.enrichedTitle.entities.entity=|text=" + "Apple" + ",type=company|&count=10000&dedup=true&outputMode=json";
+  var requestURI = "https://access.alchemyapi.com/calls/data/GetNews?apikey=" + API_KEY + "&return=enriched.url.title,enriched.url.enrichedTitle.docSentiment&rank=high&start=now-40d&end=now&q.enriched.url.enrichedTitle.entities.entity=|text=" + "Google" + ",type=company|&count=2000&dedup=true&outputMode=json";
 
   request({
     uri: requestURI,
@@ -55,7 +55,7 @@ router.get("/news", function(req, res, next) {
 
             var sentiment = item.source.enriched.url.enrichedTitle.docSentiment;
             var score = sentiment.score;
-            console.log("Score " + i + ": " + score);
+            //console.log("Score " + i + ": " + score);
             if (item.timestamp) {
               var a = new Date(item.timestamp * 1000);
               var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -66,7 +66,11 @@ router.get("/news", function(req, res, next) {
               var min = a.getMinutes();
               var sec = a.getSeconds();
               var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-              console.log("Date " + i + ": " + time);
+              if (i == 1) {
+                console.log("Date 1:" + time);
+              } else if (i == body.result.docs.length - 1) {
+                console.log("Date " + i + ": " + time);
+              }
             }
           }
         }
