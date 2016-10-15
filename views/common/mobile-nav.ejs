@@ -1,6 +1,12 @@
 <!-- Sidebar Menu -->
 <div class="ui vertical inverted sidebar menu">
   <a href="/" class="active item">Home</a>
-  <a href="login" class="item">Login</a>
-  <a href="signup" class="item">Signup</a>
+
+  <% if (user) { %>
+    <a href="dashboard" class="item">Dashboard</a>
+    <a href="logout" class="item">Log out</a>
+  <% } else { %>
+    <a href="login" class="item">Log in</a>
+    <a href="signup" class="item">Sign up</a>
+  <% } %>
 </div>

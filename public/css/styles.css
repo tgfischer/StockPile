@@ -2,6 +2,14 @@
   padding-right: 15px;
 }
 
+.title {
+  font-size: 25px;
+}
+
+.price-cell {
+  text-align: right !important;
+}
+
 .ui.inverted.breadcrumb i,
 .ui.inverted.breadcrumb a {
   color: rgba(255, 255, 255, 0.2);

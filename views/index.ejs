@@ -23,8 +23,18 @@
       <% include common/nav %>
     </div>
 
-    <div class="ui main vertical inverted stripe segment">
-      <div class="ui middle aligned stackable grid container">
+    <div class="ui main vertical inverted stripe segment container">
+      <div class="ui middle aligned stackable grid">
+        <div class="row">
+          <div class="title column">
+            <h1 class="ui inverted huge header">
+              Stock Pile
+              <div class="sub header">
+                Browse the stocks listed below to determine each company's sentiment. The information is gathered from articles across the internet
+              </div>
+            </h1>
+          </div>
+        </div>
         <div class="row">
           <div class="column">
             <table class="ui inverted celled striped selectable listings table" cellspacing="0" width="100%">
@@ -57,7 +67,7 @@
     // create sidebar and attach to menu open
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
 
-    var table = $('.listings').DataTable({
+    var listings = $('.listings').DataTable({
       serverSide: true,
       ajax: {
         url: '/get_listings',
@@ -72,7 +82,7 @@
     });
 
     $('.listings tbody').on( 'click', 'tr', function () {
-      var row = table.row(this).data();
+      var row = listings.row(this).data();
       window.location.href = "/stock/" + row.symbol;
     });
   });
