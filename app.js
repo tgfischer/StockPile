@@ -43,8 +43,22 @@ app.set('port', process.env.PORT || 3000);
 app.use(express.static(__dirname + '/public'));
 
 app.use(function(req, res, next) {
-  res.locals.user = req.user;
-  next();
+  var user = req.user;
+
+  if (user) {
+    user.populate({
+      path: 'stocks',
+      populate: {
+        path: 'company'
+      }
+    }, function(err, stocks) {
+      res.locals.user = user;
+      next();
+    });
+  } else {
+    res.locals.user = user;
+    next();
+  }
 });
 
 /* Set up the routes
@@ -53,11 +67,15 @@ var index = require('./routes/index');
 var stock = require('./routes/stock');
 var login = require('./routes/login');
 var signup = require('./routes/signup');
+var logout = require('./routes/logout');
+var dashboard = require('./routes/dashboard/dashboard');
 
 app.use('/', index);
 app.use('/stock', stock);
 app.use('/login', login);
 app.use('/signup', signup);
+app.use('/logout', logout);
+app.use('/dashboard', dashboard);
 
 /* Start the server
 ------------------------------------------------------ */

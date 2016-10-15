@@ -14,72 +14,78 @@
   <link rel="stylesheet" type="text/css" href="/css/login.css">
 </head>
 <body>
+  <% include common/mobile-nav %>
+  <!-- Page Contents -->
+  <div class="pusher">
+    <div class="ui inverted vertical segment">
+      <% include common/nav %>
+    </div>
+    <div class="ui content middle aligned center aligned inverted grid">
+      <div class="column">
+        <h2 class="ui inverted header">
+          Log into your account
+        </h2>
+        <form class="ui big form" action="/login" method="POST">
+          <div class="field">
+            <div class="ui fluid left icon input">
+              <i class="mail icon"></i>
+              <input type="text" name="email" placeholder="E-mail address">
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui fluid left icon input">
+              <i class="lock icon"></i>
+              <input type="password" name="password" placeholder="Password">
+            </div>
+          </div>
 
-<div class="ui middle aligned center aligned inverted grid">
-  <div class="column">
-    <h2 class="ui inverted image header">
-      <img src="/images/logo.png" class="image">
-      <div class="content">
-        Log-in to your account
-      </div>
-    </h2>
-    <form class="ui big form">
-      <div class="field">
-        <div class="ui left icon input">
-          <i class="user icon"></i>
-          <input type="text" name="email" placeholder="E-mail address">
+          <div class="ui fluid big inverted submit button">Log in</div>
+
+          <div class="ui error message"></div>
+        </form>
+
+        <div class="ui big inverted segment">
+          New to us? <a href="#">Sign Up</a>
         </div>
       </div>
-      <div class="field">
-        <div class="ui left icon input">
-          <i class="lock icon"></i>
-          <input type="password" name="password" placeholder="Password">
-        </div>
-      </div>
-      <div class="ui fluid large inverted submit button">Login</div>
-
-      <div class="ui error message"></div>
-
-    </form>
-
-    <div class="ui message">
-      New to us? <a href="#">Sign Up</a>
     </div>
   </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="/semantic/semantic.min.js"></script>
-<script>
-$(document).ready(function() {
-  $('.ui.form').form({
-    fields: {
-      email: {
-        identifier  : 'email',
-        rules: [{
-          type   : 'empty',
-          prompt : 'Please enter your e-mail'
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="/semantic/semantic.min.js"></script>
+  <script>
+  $(document).ready(function() {
+    // create sidebar and attach to menu open
+    $('.ui.sidebar').sidebar('attach events', '.toc.item');
+
+    $('.ui.form').form({
+      fields: {
+        email: {
+          identifier  : 'email',
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter your e-mail'
+          },
+          {
+            type   : 'email',
+            prompt : 'Please enter a valid e-mail'
+          }]
         },
-        {
-          type   : 'email',
-          prompt : 'Please enter a valid e-mail'
-        }]
-      },
-      password: {
-        identifier  : 'password',
-        rules: [{
-          type   : 'empty',
-          prompt : 'Please enter your password'
-        },
-        {
-          type   : 'length[6]',
-          prompt : 'Your password must be at least 6 characters'
-        }]
+        password: {
+          identifier  : 'password',
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter your password'
+          },
+          {
+            type   : 'length[6]',
+            prompt : 'Your password must be at least 6 characters'
+          }]
+        }
       }
-    }
+    });
   });
-});
-</script>
+  </script>
 </body>
 
 </html>

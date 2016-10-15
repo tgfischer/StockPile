@@ -177,37 +177,6 @@ function handleSentimentParsing(urls, callback) {
 }
 
 function handleDandelionResults(arrayOfSentiments, callback) {
-  // var finalArrayOfSentiments = [];
-  // for (var i = 0; i < arrayOfSentiments.length; i++) {
-  //   var exists = false;
-  //   for (var j = 0; j < finalArrayOfSentiments.length; j++) {
-  //     if (finalArrayOfSentiments[j].date.getDay() === arrayOfSentiments[i].date.getDay()
-  //           && finalArrayOfSentiments[j].date.getMonth() === arrayOfSentiments[i].date.getMonth() 
-  //           && finalArrayOfSentiments[j].date.getFullYear() === arrayOfSentiments[i].date.getFullYear()
-  //           && (finalArrayOfSentiments[j].date.getHours() - arrayOfSentiments[i].date.getHours() <= 12)) {
-  //       finalArrayOfSentiments[j].score += arrayOfSentiments[i].score;
-  //       finalArrayOfSentiments[j].count = finalArrayOfSentiments[j].count + 1;
-  //       exists = true;
-  //       break;
-  //     }
-  //   }
-
-  //   // If the date doesn't exist, we need to push a new value - this value will include the count... for now.
-  //   if (!exists) {
-  //     var finalSentimentObject = {
-  //       score: arrayOfSentiments[i].score,
-  //       date: arrayOfSentiments[i].date,
-  //       count: 1
-  //     };
-  //     finalArrayOfSentiments.push(finalSentimentObject);
-  //   }
-  // } // end compressing loop
-
-  // // Now that we have compressed the arrayOfSentiments into the finalArrayOfSentiments, we need to recalculate the scores
-  // for (var i = 0; i < finalArrayOfSentiments.length; i++) {
-  //   finalArrayOfSentiments[i].score = (finalArrayOfSentiments[i].score / finalArrayOfSentiments[i].count);
-  //   delete finalArrayOfSentiments[i].count;
-  // }
   callback(arrayOfSentiments);
 }
 

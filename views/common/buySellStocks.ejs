@@ -1,0 +1,99 @@
+<div class="ui small buy modal">
+  <div class="header">
+    Buy <span class="stock-name"></span> (<span class="stock-symbol"></span>) Stock
+  </div>
+  <div class="content">
+    <div class="ui grid">
+      <div class="row">
+        <div class="column">
+          <form class="ui buy form" action="/dashboard/buy" method="POST">
+            <div class="two fields">
+              <div class="two wide field">
+                <label>Price per stock</label>
+                <p>$<span class="stock-price">115</span></p>
+              </div>
+              <div class="fourteen wide field">
+                <label>Number of stocks to purchase</label>
+                <input type="number" class="ui fluid input" name="numStocks" value="0">
+              </div>
+            </div>
+
+            <input type="hidden" name="companyId">
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="center aligned column">
+          <div class="ui statistic">
+            <div class="value">
+              $<span class="total">0</span>
+            </div>
+            <div class="label">
+              Total Cost
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="ui positive left labeled icon button">
+      Purchase
+      <i class="checkmark icon"></i>
+    </div>
+    <div class="ui black deny left labeled icon button">
+      Cancel
+      <i class="remove icon"></i>
+    </div>
+  </div>
+</div>
+
+<div class="ui small sell modal">
+  <div class="header">
+    Sell <span class="stock-name"></span> (<span class="stock-symbol"></span>) Stock
+  </div>
+  <div class="content">
+    <div class="ui grid">
+      <div class="row">
+        <div class="column">
+          <form class="ui sell form" action="/dashboard/sell" method="POST">
+            <div class="two fields">
+              <div class="two wide field">
+                <label>Price per stock</label>
+                <p>$<span class="stock-price">115</span></p>
+              </div>
+              <div class="fourteen wide field">
+                <label>Number of stocks to sell</label>
+                <input type="number" class="ui fluid input" name="numStocks" value="0">
+              </div>
+            </div>
+
+            <input type="hidden" name="companyId">
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="center aligned column">
+          <div class="ui statistic">
+            <div class="value">
+              $<span class="total">0</span>
+            </div>
+            <div class="label">
+              Total Profit
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="ui positive left labeled icon button">
+      Sell
+      <i class="checkmark icon"></i>
+    </div>
+    <div class="ui black deny left labeled icon button">
+      Cancel
+      <i class="remove icon"></i>
+    </div>
+  </div>
+</div>

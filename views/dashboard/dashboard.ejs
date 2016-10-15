@@ -15,23 +15,30 @@
   <link rel="stylesheet" type="text/css" href="/css/index.css">
 </head>
 <body>
-  <% include common/mobile-nav %>
+  <% include ../common/mobile-nav %>
 
   <!-- Page Contents -->
   <div class="pusher">
     <div class="ui inverted vertical segment">
-      <% include common/nav %>
+      <% include ../common/nav %>
     </div>
 
     <div class="ui main vertical inverted stripe segment container">
       <div class="ui middle aligned stackable grid">
-        <div class="middle aligned row">
+        <div class="row">
+          <div class="column">
+            <div class="ui inverted breadcrumb">
+              <i class="left chevron icon divider"></i>
+              <a href="/" class="section">Back</a>
+            </div>
+          </div>
+        </div>
+        <div class="row">
           <div class="fourteen wide title column">
             <h1 class="ui inverted huge header">
-              NASDAQ
+              Your Portfolio
               <div class="sub header">
-                Browse the some of the most popular stocks in the NASDAQ listed below. A sentiment is calculated for each company, which
-                might help you decide if that compant would be a good investment
+
               </div>
             </h1>
           </div>
@@ -42,6 +49,9 @@
         <div class="row">
           <div class="column">
             <div class="ui inverted segment">
+              <!--<div class="ui active dimmer">
+                <div class="ui massive text loader"></div>
+              </div>-->
               <table class="ui inverted celled striped selectable listings table" cellspacing="0" width="100%">
                 <thead>
                   <tr>
@@ -62,10 +72,10 @@
       </div>
     </div>
 
-    <% include common/footer %>
+    <% include ../common/footer %>
   </div>
 
-  <% include common/buySellStocks %>
+  <% include ../common/buySellStocks %>
 
   <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" language="javascript" src="/semantic/semantic.min.js"></script>
@@ -86,7 +96,7 @@
       serverSide: true,
       order: [[ 1, "asc" ]],
       ajax: {
-        url: '/get_listings',
+        url: '/dashboard/get_stocks',
         type: 'POST'
       },
       columns: [
@@ -110,13 +120,16 @@
           className: "dt-center",
           width: "10%",
           render: function(data, type, row, meta) {
-            return user && user.stocks.filter(function(stock) {
-              return stock.company._id === row._id
-            }).length > 0 ? "<button class='ui fluid secondary sell button'>Sell</button>" : "<button class='ui fluid secondary disabled sell button'>Sell</button>";
+            return "<button class='ui fluid secondary sell button'>Sell</button>";
           }
         },
         //{ data: "lastUpdated", visible: false, searchable: false }
       ]
+    });
+
+    $('.listings tbody').on( 'click', 'tr', function () {
+      var row = listings.row(this).data();
+      window.location.href = "/stock/" + row.symbol;
     });
 
     listings.on('processing.dt', function (e, settings, processing) {
@@ -127,17 +140,7 @@
       }
     });
 
-    if (!user) {
-      listings.column(3).visible(false);
-      listings.column(4).visible(false);
-    }
-
-    $('.listings tbody').on('click', 'tr', function () {
-      var row = listings.row(this).data();
-      window.location.href = "/stock/" + row.symbol;
-    });
-
-    <% include common/buySellStocksScripts %>
+    <% include ../common/buySellStocksScripts %>
   });
   </script>
 

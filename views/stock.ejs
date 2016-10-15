@@ -39,6 +39,16 @@
             </h1>
           </div>
         </div>
+        <% if (user) { %>
+          <div class="row">
+            <div class="two wide column">
+              <button class="ui fluid green inverted buy button">Buy</button>
+            </div>
+            <div class="two wide column">
+              <button class="ui fluid secondary inverted sell button">Sell</button>
+            </div>
+          </div>
+        <% } %>
         <div class="row">
           <div class="title column">
             <div id="graph-loader" class="ui big text active loader">Analyzing News...</div>
@@ -58,6 +68,7 @@
     }
     var comp = JSON.parse(htmlDecode("<%= JSON.stringify(company) %>"));
   </script>
+
   <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" language="javascript" src="/semantic/semantic.min.js"></script>
   <script type="text/javascript" language="javascript" src="/js/chart.min.js"></script>
@@ -65,6 +76,8 @@
   $(document).ready(function() {
     // create sidebar and attach to menu open
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
+
+    <% include common/buySellStocksScripts %>
 
     // Make request to server for the
     Chart.defaults.global.defaultFontColor = "#FFFFFF";

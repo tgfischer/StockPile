@@ -1,3 +1,23 @@
+.padding-right {
+  padding-right: 15px;
+}
+
+.dt-center {
+  text-align: center !important;
+}
+
+.title {
+  font-size: 25px;
+}
+
+tr .fluid.button {
+  box-sizing: border-box;
+}
+
+.price-cell {
+  text-align: right !important;
+}
+
 .ui.inverted.breadcrumb i,
 .ui.inverted.breadcrumb a {
   color: rgba(255, 255, 255, 0.2);
@@ -23,6 +43,7 @@
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+  background: #1B1C1D !important;
 }
 
 .main {
@@ -63,10 +84,6 @@
 
 .secondary.pointing.menu .toc.item {
   display: none;
-}
-
-body {
-  background: #1B1C1D;
 }
 
 .dataTable tbody tr {
