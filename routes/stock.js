@@ -52,13 +52,13 @@ router.get("/sentiment/:_id", function(req, res, next) {
     var companyName = company.name;
     console.log(companyName);
     if (error) {
-      res.send("Error occurred when querying the company._id: " + error);
+      return res.send("Error occurred when querying the company._id: " + error);
     } else {
       // STEP 1: Make a call to the New York Times API to gather all the artical urls that mention the company name.
       var offsets = [0, 1, 2, 3, 4];
       var allDocs = [];
       var offsetCount = 0;
-      offsets.forEach(function(item) {
+      offsets.forEach(function(item, i) {
         request.get({
           url: "https://api.nytimes.com/svc/search/v2/articlesearch.json",
           qs: {
@@ -71,7 +71,7 @@ router.get("/sentiment/:_id", function(req, res, next) {
         }, function(err, response, body) {
           offsetCount++;
           if (err) {
-            res.send("Error occurred when making request to New York Times API: " + nyt_err);
+            return res.send("Error occurred when making request to New York Times API: " + err);
           } else {
             body = JSON.parse(body);
             if (body && body.response && body.response.docs) {
@@ -92,7 +92,7 @@ router.get("/sentiment/:_id", function(req, res, next) {
                       // This callback will accept an array of the sentiments we need to save to the current company
                       Sentiment.insertMany(finalSentimentArray, function(many_err, sentiments) {
                         if (many_err) {
-                          res.send ("Error entering sentiments: " + many_err);
+                          return res.send ("Error entering sentiments: " + many_err);
                         } else {
                           console.log("Successful insert");
                           for (var i = 0; i < sentiments.length; i++) {
@@ -103,9 +103,9 @@ router.get("/sentiment/:_id", function(req, res, next) {
                           delete upsertData._id;
                           Company.update({symbol: company.symbol}, upsertData, {upsert:true}, function(insert_err) {
                             if (insert_err) {
-                              res.send("Error updating company sentiment information: " + insert_err);
+                              return res.send("Error updating company sentiment information: " + insert_err);
                             } else {
-                              res.send("Successfully obtained the sentiment data & stored in company: " + JSON.stringify(body, null, 2));
+                              return res.send("Successfully obtained the sentiment data & stored in company: " + JSON.stringify(body, null, 2));
                             }
                           });
                         }
@@ -113,7 +113,7 @@ router.get("/sentiment/:_id", function(req, res, next) {
                     });
                   });
                 } else {
-                  res.send("Error handling New York Times results: " + body);
+                  return res.end("Error handling New York Times results: " + body);
                 }
               });
             }
@@ -189,6 +189,8 @@ router.post("/sentiment", function(req, res, next) {
         res.send (necessaryIds);
       }
     });
+  } else {
+    res.send ([]);
   }
 });
 

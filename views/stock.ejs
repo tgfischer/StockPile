@@ -39,8 +39,8 @@
             <h1 class="ui huge inverted header">
               <%= company.name %>
               <div class="medium sub header">Symbol: <%= company.symbol %> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Current Sale Price: <%= company.price %> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Percent Change: &nbsp;&nbsp;&nbsp;
-              <% if(company.change < 0) { %> 
-                <div style="padding: 0.3em 0.55em; display: inline;" class="ui message span-full-red"><%= company.change %>% </div></div> 
+              <% if(company.change < 0) { %>
+                <div style="padding: 0.3em 0.55em; display: inline;" class="ui message span-full-red"><%= company.change %>% </div></div>
               <% } else if (company.change > 0) { %>
                 <div style="padding: 0.3em 0.55em; display: inline;" class="ui message span-full-green"><%= company.change %>% </div></div>
               <% } %>
