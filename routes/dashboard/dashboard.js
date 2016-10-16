@@ -207,9 +207,8 @@ router.post('/get_stocks', Auth.isLoggedIn, function(req, res, next) {
     }
   ], function resolve (err, results) {
     if (err) {
-      reject({
-        error: err
-      });
+      console.log(err);
+      res.status(500).json(err);
     } else {
       var answer = results[results.length - 1];
 

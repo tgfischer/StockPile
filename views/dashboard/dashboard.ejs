@@ -106,11 +106,12 @@
         { data: "_id", visible: false, searchable: false, orderable: false },
         { data: "symbol", title: "Symbol", className: "dt-center", width: "10%" },
         { data: "name", title: "Company Name", width: "40%" },
-        { 
-          data: "change", 
-          title: "Percent Change", 
-          className: "dt-center td-full", 
-          width: "15%", 
+        {
+          data: "change",
+          title: "Percent Change",
+          className: "dt-center td-full",
+          width: "15%",
+          searchable: false,
           render: function(data, type, row, meta) {
             if (parseFloat(data) > 0) {
               return "<div class='ui green message span-full-green'>" + data + " % </div>";
@@ -121,7 +122,16 @@
             }
           }
         },
-        { data: "price", title: "Current Stock Value", className: "dt-center", width: "15%" },
+        {
+          data: "price",
+          title: "Current Stock Value",
+          className: "dt-center",
+          width: "15%",
+          searchable: false,
+          render: function(data, type, row, meta) {
+            return '$' + data;
+          }
+        },
         {
           data: null,
           orderable: false,

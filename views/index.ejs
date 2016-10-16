@@ -14,6 +14,7 @@
   <link rel="stylesheet" type="text/css" href="/semantic/semantic.min.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.semanticui.min.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.semanticui.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.0/css/responsive.semanticui.min.css">
   <link rel="stylesheet" type="text/css" href="/css/styles.css">
   <link rel="stylesheet" type="text/css" href="/css/index.css">
 </head>
@@ -31,8 +32,8 @@
         <div class="middle aligned row">
           <div class="fourteen wide title column">
             <h1 class="ui inverted huge header">
-              NASDAQ
-              <div class="sub header">
+              NASDAQ Listings
+              <div class="small sub header">
                 Browse the some of the most popular stocks in the NASDAQ listed below. A sentiment is calculated for each company, which
                 might help you decide if that compant would be a good investment
               </div>
@@ -94,8 +95,9 @@
     //     console.log("Updated all stock stats!");
     //   }
     // });
-    
+
     var listings = $('.listings').DataTable({
+      responsive: true,
       serverSide: true,
       order: [[ 1, "asc" ]],
       ajax: {
@@ -106,11 +108,12 @@
         { data: "_id", visible: false, searchable: false, orderable: false },
         { data: "symbol", title: "Symbol", className: "dt-center", width: "10%" },
         { data: "name", title: "Company Name", width: "60%" },
-        { 
-          data: "change", 
-          title: "Percent Change", 
-          className: "dt-center td-full", 
-          width: "15%", 
+        {
+          data: "change",
+          title: "Percent Change",
+          className: "dt-center td-full",
+          width: "15%",
+          searchable: false,
           render: function(data, type, row, meta) {
             if (parseFloat(data) > 0) {
               return "<div class='ui message span-full-green'>" + data + " % </div>";
@@ -121,7 +124,16 @@
             }
           }
         },
-        { data: "price", title: "Current Stock Value", className: "dt-center", width: "15%" },
+        {
+          data: "price",
+          title: "Current Stock Value",
+          className: "dt-center",
+          width: "15%",
+          searchable: false,
+          render: function(data, type, row, meta) {
+            return '$' + data;
+          }
+        },
         {
           data: null,
           orderable: false,

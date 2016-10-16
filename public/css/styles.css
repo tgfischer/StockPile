@@ -95,6 +95,9 @@ tr .fluid.button {
 .medium.sub.header {
   font-size: 0.5em !important;
 }
+.small.sub.header {
+  font-size: 0.4em !important;
+}
 
 .padding-top {
   padding-top: 2em !important;
@@ -146,7 +149,7 @@ tr .fluid.button {
   border-radius: 0 rem !important;
   color: white !important;
   background-color: #21BA45 !important;
-} 
+}
 
 .span-full-red {
   box-shadow: none !important;
