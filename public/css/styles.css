@@ -47,7 +47,7 @@ tr .fluid.button {
 
 .ui.inverted.breadcrumb i,
 .ui.inverted.breadcrumb a {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .ui.inverted.breadcrumb a:hover {
