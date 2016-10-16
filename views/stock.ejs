@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
 
   <!-- Site Properties -->
-  <title>Stock Pile</title>
+  <title><%= company.name %></title>
   <link rel="stylesheet" type="text/css" href="/semantic/semantic.min.css">
   <link rel="stylesheet" type="text/css" href="/css/styles.css">
   <link rel="stylesheet" type="text/css" href="/css/stock.css">
@@ -72,7 +72,7 @@
               <button class="ui big fluid green buy button">Buy</button>
             </div>
             <div class="three wide column">
-              <button class="ui big <% if (!user.stocks.filter(function(stock) { return stock.company._id === company._id }).length == 0) { %>disabled<% } %> fluid secondary inverted sell button">
+              <button class="ui big <% if (amountOwned == 0) { %>disabled<% } %> fluid secondary inverted sell button">
                 Sell
               </button>
             </div>
