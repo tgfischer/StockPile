@@ -24,32 +24,14 @@ router.post('/get_listings', function(req, res, next) {
   var query = dq(Company);
 
   console.log(JSON.stringify(req.body, null, 2));
-
+  
   query.run(req.body).then(function(data) {
     // TODO: Check the last time the company's information was updated. If greater
     // than n days, update them again
     // console.log(data, null, 2);
 
-    // Make a get request to Yahoo Finance API to get the stock information (Price and % Change)
     res.json(data);
-    // if (data.data && data.data.length) {
-    //   for (var i = 0; i < data.data.length; i++) {
-    //     consoe.log(data.data[i].symbol);
-    //     var ticker = data.data[i].symbol; 
-
-    //     var YQL_query = new YQL('SELECT * FROM yahoo.finance.quotes WHERE symbol IN ("' + ticker +'")');
-    //     YQL_query.setParam("format", "json");
-    //     YQL_query.exec(function (error, response) {
-    //       if (error) {
-    //         console.log(error);
-    //       } else {
-    //         console.log(response.query.results.quote.ChangeinPercent);
-    //         //data.data[i].change = response.query.results.quote.ChangeinPercent;
-    //       }
-    //     });
-    //   }
-    // }
-    // res.json(data);
+  
   }, function (err) {
     res.status(500).json(err);
   });
