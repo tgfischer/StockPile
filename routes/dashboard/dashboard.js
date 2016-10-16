@@ -11,7 +11,17 @@ var Auth = require('../../utils/Auth');
 var router = express.Router();
 
 router.get('/', Auth.isLoggedIn, function(req, res, next) {
-  res.render('dashboard/dashboard');
+  Stock.find({ user: req.user._id }, function(err, stocks) {
+    var worth = 0;
+
+    for (var i = 0; i < stocks.length; i++) {
+      worth += stocks[i].price;
+    }
+
+    res.render('dashboard/dashboard', {
+      worth: worth.toFixed(2)
+    });
+  })
 });
 
 router.post('/buy', Auth.isLoggedIn, function(req, res, next) {
@@ -22,7 +32,7 @@ router.post('/buy', Auth.isLoggedIn, function(req, res, next) {
   Company.findOne({ _id : sanitizer.sanitize(req.body.companyId) }, function(err, company) {
     for (var i = 0; i < numStocks; i++) {
       stocks.push({
-        price: company.open,
+        price: company.price,
         purchaseDate: Date.now(),
         company: company._id,
         user: req.user._id

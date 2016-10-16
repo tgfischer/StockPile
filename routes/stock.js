@@ -2,6 +2,7 @@ var express = require('express');
 var sanitizer = require('sanitizer');
 var request = require('request');
 var Company = require('../models/Company');
+var Stock = require('../models/Stock');
 var Sentiment = require("../models/Sentiment");
 var Converter = require("csvtojson").Converter;
 var router = express.Router();
@@ -22,15 +23,27 @@ router.get('/:symbol', function(req, res, next) {
       method: 'GET'
     }, function(error, response, body) {
       var converter = new Converter({ });
-      converter.fromString(body, function(err, result) {
-        console.log(JSON.stringify(result, null, 2));
+      converter.fromString(body, function(err, history) {
+        history = history.slice(0, 10);
 
-        result = result.slice(0, 10);
-
-        res.render('stock', {
-          company: company,
-          history: result
-        });
+        if (req.user) {
+          Stock.find({
+            user: req.user._id,
+            company: company._id
+          }, function(err, stocks) {
+            res.render('stock', {
+              company: company,
+              history: history,
+              amountOwned: stocks.length
+            });
+          })
+        } else {
+          res.render('stock', {
+            company: company,
+            history: history,
+            amountOwned: -1
+          });
+        }
       });
     });
   });
@@ -89,27 +102,29 @@ router.get("/sentiment/:_id", function(req, res, next) {
                   handleSentimentParsing(urls, function(sentimentValues) {
                     // Hopefully now we have an array of sentiment values for the company with dates associated!
                     handleDandelionResults(sentimentValues, function(finalSentimentArray) {
-                      // This callback will accept an array of the sentiments we need to save to the current company
-                      Sentiment.insertMany(finalSentimentArray, function(many_err, sentiments) {
-                        if (many_err) {
-                          return res.send ("Error entering sentiments: " + many_err);
-                        } else {
-                          console.log("Successful insert");
-                          for (var i = 0; i < sentiments.length; i++) {
-                            company.sentiments.push(sentiments[i]._id);
-                          }
-                          company.lastUpdated = new Date();
-                          var upsertData = company.toObject();
-                          delete upsertData._id;
-                          Company.update({symbol: company.symbol}, upsertData, {upsert:true}, function(insert_err) {
-                            if (insert_err) {
-                              return res.send("Error updating company sentiment information: " + insert_err);
-                            } else {
-                              return res.send("Successfully obtained the sentiment data & stored in company: " + JSON.stringify(body, null, 2));
+                      if (finalSentimentArray.length !== 0) {
+                        // This callback will accept an array of the sentiments we need to save to the current company
+                        Sentiment.insertMany(finalSentimentArray, function(many_err, sentiments) {
+                          if (many_err) {
+                            return res.send ("Error entering sentiments: " + many_err);
+                          } else {
+                            console.log("Successful insert");
+                            for (var i = 0; i < sentiments.length; i++) {
+                              company.sentiments.push(sentiments[i]._id);
                             }
-                          });
-                        }
-                      });
+                            company.lastUpdated = new Date();
+                            var upsertData = company.toObject();
+                            delete upsertData._id;
+                            Company.update({symbol: company.symbol}, upsertData, {upsert:true}, function(insert_err) {
+                              if (insert_err) {
+                                return res.send("Error updating company sentiment information: " + insert_err);
+                              } else {
+                                return res.send("Successfully obtained the sentiment data & stored in company: " + JSON.stringify(body, null, 2));
+                              }
+                            });
+                          }
+                        });
+                      }
                     });
                   });
                 } else {
@@ -142,7 +157,9 @@ function handleNewYorkTimesResults(allDocs, callback) {
 
 function handleSentimentParsing(urls, callback) {
   var sentimentValues = [];
+  var respCount = 0;
   urls.forEach(function(item, index) {
+    respCount++;
     request.get({
       url: "https://api.dandelion.eu/datatxt/sent/v1/?lang=en&url=" + item.url + "&token=" + DANDELION_API_KEY
     }, function(dand_err, response, body) {
@@ -158,7 +175,7 @@ function handleSentimentParsing(urls, callback) {
           sentimentValues.push(sentimentObj);
         }
 
-        if (sentimentValues.length === urls.length) {
+        if (respCount === urls.length) {
           callback(sentimentValues);
         }
       }

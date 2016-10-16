@@ -14,7 +14,7 @@ $('input[name=numStocks]').keyup(function(e) {
   var costPerStock = parseFloat($('.stock-price:visible').text());
   var numStocks = parseInt(numStocksText ? numStocksText : 0);
 
-  $('.total').text((costPerStock * numStocks));
+  $('.total').text((costPerStock * numStocks).toFixed(2));
 });
 
 $('.listings tbody').on('click', 'button.buy', function() {
@@ -30,7 +30,7 @@ $('.listings tbody').on('click', 'button.buy', function() {
 
   $('.stock-name').text(data.name);
   $('.stock-symbol').text(data.symbol);
-  $('.stock-price').text(115);
+  $('.stock-price').text(data.price);
   $('.stock-owned').text(numOwned);
   $('.total').text(0);
   $('input[name=companyId]').val(data._id);
@@ -69,7 +69,7 @@ $('.listings tbody').on('click', 'button.sell', function() {
 
   $('.stock-name').text(data.name);
   $('.stock-symbol').text(data.symbol);
-  $('.stock-price').text(115);
+  $('.stock-price').text(data.price);
   $('.stock-owned').text(numOwned);
   $('.total').text(0);
   $('input[name=companyId]').val(data._id);
@@ -107,7 +107,7 @@ $('.listings tbody').on('click', 'button.sell', function() {
 
     $('.stock-name').text("<%= company.name %>");
     $('.stock-symbol').text("<%= company.symbol %>");
-    $('.stock-price').text(115);
+    $('.stock-price').text("<%= company.price %>");
     $('.stock-owned').text(numOwned);
     $('.total').text(0);
     $('input[name=companyId]').val("<%= company._id %>");
@@ -144,7 +144,7 @@ $('.listings tbody').on('click', 'button.sell', function() {
 
     $('.stock-name').text("<%= company.name %>");
     $('.stock-symbol').text("<%= company.symbol %>");
-    $('.stock-price').text(115);
+    $('.stock-price').text("<%= company.price %>");
     $('.stock-owned').text(numOwned);
     $('.total').text(0);
     $('input[name=companyId]').val("<%= company._id %>");

@@ -38,19 +38,36 @@
           <div class="title column">
             <h1 class="ui huge inverted header">
               <%= company.name %>
-              <div class="medium sub header">Symbol: <%= company.symbol %> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Current Sale Price: <%= company.price %> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Percent Change: &nbsp;&nbsp;&nbsp;
-              <% if(company.change < 0) { %>
-                <div style="padding: 0.3em 0.55em; display: inline;" class="ui message span-full-red"><%= company.change %>% </div></div>
-              <% } else if (company.change > 0) { %>
-                <div style="padding: 0.3em 0.55em; display: inline;" class="ui message span-full-green"><%= company.change %>% </div></div>
-              <% } %>
+              <div class="medium sub header">
+                <div class="ui grid">
+                  <div class="row">
+                    <div class="three wide column">
+                      Symbol: <%= company.symbol %>
+                    </div>
+                    <div class="four wide column">
+                      Current Sale Price: $<%= company.price %>
+                    </div>
+                    <div class="four wide column">
+                      Amount Owned: <%= amountOwned %>
+                    </div>
+                    <div class="five wide column">
+                      Percent Change:
+                      <% if(company.change < 0) { %>
+                        <div style="margin-left: 0.5em; padding: 0.3em 0.55em; display: inline;" class="ui message span-full-red"><%= company.change %>% </div>
+                      <% } else if (company.change > 0) { %>
+                        <div style="margin-left: 0.5em; padding: 0.3em 0.55em; display: inline;" class="ui message span-full-green"><%= company.change %>% </div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </h1>
           </div>
         </div>
         <% if (user) { %>
           <div class="row">
             <div class="three wide column">
-              <button class="ui big fluid green inverted buy button">Buy</button>
+              <button class="ui big fluid green buy button">Buy</button>
             </div>
             <div class="three wide column">
               <button class="ui big <% if (!user.stocks.filter(function(stock) { return stock.company._id === company._id }).length == 0) { %>disabled<% } %> fluid secondary inverted sell button">
