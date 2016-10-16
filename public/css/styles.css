@@ -5,6 +5,14 @@
   font-weight: 100 !important;
 }
 
+.modal .header {
+  font-size: 2em !important;
+}
+
+.success.modal .message {
+  font-size: 1.5em !important;
+}
+
 .light-text,
 .light-text * {
   font-weight: 100 !important;
@@ -47,7 +55,7 @@ tr .fluid.button {
 
 .ui.inverted.breadcrumb i,
 .ui.inverted.breadcrumb a {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .ui.inverted.breadcrumb a:hover {
@@ -77,11 +85,16 @@ tr .fluid.button {
   flex: 1;
 }
 
+.medium.sub.header {
+  font-size: 0.5em !important;
+}
+
+.padding-top {
+  padding-top: 2em !important;
+}
+
 .hidden.menu {
   display: none;
-}
-.ui.vertical.stripe h3 {
-  font-size: 2em;
 }
 .ui.vertical.stripe .button + h3,
 .ui.vertical.stripe p + h3 {
