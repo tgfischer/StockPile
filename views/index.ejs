@@ -77,13 +77,22 @@
   $(document).ready(function() {
     // create sidebar and attach to menu open
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
-    
     <% if (user) { %>
       var user = <%- JSON.stringify(user) %>;
     <% } else { %>
       var user = null;
     <% } %>
 
+    // // Update the pricing of all the stocks
+    // UNCOMMENT TO UPDATE STOCK INFORMATION
+    // $.ajax({
+    //   url: "/update/pricing",
+    //   method: "GET",
+    //   success: function(data) {
+    //     console.log("Updated all stock stats!");
+    //   }
+    // });
+    
     var listings = $('.listings').DataTable({
       serverSide: true,
       order: [[ 1, "asc" ]],
@@ -94,9 +103,23 @@
       columns: [
         { data: "_id", visible: false, searchable: false, orderable: false },
         { data: "symbol", title: "Symbol", className: "dt-center", width: "10%" },
-        { data: "name", title: "Company Name", width: "70%" },
-        { data: "change", title: "Percent Change", className: "dt-center", width: "10%" },
-        { data: "price", title: "Current Stock Value", className: "dt-center", width: "10%" },
+        { data: "name", title: "Company Name", width: "60%" },
+        { 
+          data: "change", 
+          title: "Percent Change", 
+          className: "dt-center td-full", 
+          width: "15%", 
+          render: function(data, type, row, meta) {
+            if (parseFloat(data) > 0) {
+              return "<div class='ui message span-full-green'>" + data + " % </div>";
+            } else if (parseFloat(data) < 0) {
+              return "<div class='ui message span-full-red'>" + data + " % </div>";
+            } else {
+              return "<div class='ui message span-full'>" + data + " % </div>";
+            }
+          }
+        },
+        { data: "price", title: "Current Stock Value", className: "dt-center", width: "15%" },
         {
           data: null,
           orderable: false,
@@ -140,7 +163,6 @@
       var row = listings.row(this).data();
       window.location.href = "/stock/" + row.symbol;
     });
-
     <% include common/buySellStocksScripts %>
   });
   </script>

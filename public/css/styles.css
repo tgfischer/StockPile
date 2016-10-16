@@ -117,6 +117,24 @@ tr .fluid.button {
   cursor: pointer;
 }
 
+.td-full {
+  padding: 0 em !important;
+}
+
+.span-full-green {
+  box-shadow: none !important;
+  border-radius: 0 rem !important;
+  color: white !important;
+  background-color: #21BA45 !important;
+} 
+
+.span-full-red {
+  box-shadow: none !important;
+  border-radius: 0 rem !important;
+  color: white !important;
+  background-color: #DB2828 !important;
+}
+
 @media only screen and (max-width: 700px) {
   .ui.fixed.menu {
     display: none !important;

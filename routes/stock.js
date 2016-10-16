@@ -5,13 +5,6 @@ var Sentiment = require("../models/Sentiment");
 var router = express.Router();
 var request = require("request");
 
-
-// Expired Bluemix API keys for AlchemyNews
-//var API_KEY = "18bcbc1c281f1431245daff8bbc743e7469e05cc"; // IBM email
-//var API_KEY = "7814c8d4f65421498296b5c92824b41944f81bdd"; // adam_gencarelli@hotmail.com
-//var API_KEY = "f18660ce5b39eb127a7a48855f5e1a214ecac8f6"; // adam.gencarelli89@gmail.com
-//var API_KEY = "25105b928ecac2f2115c4e50c925dc5fa206f163";   // agencare@uwo.ca 
-
 // API Keys: 
 var NYT_API_KEY = "3a7cdfc6260b4973992f8aaaedc7f285";
 var DANDELION_API_KEY = "8f1d6b453a554e74a6b5e2ea4f98543c";

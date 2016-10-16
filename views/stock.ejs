@@ -170,7 +170,7 @@
     } else {
       // We should update the finance stats 
       $.ajax({
-        url: "/stockprice/"+comp._id,
+        url: "/update/pricing/" + comp._id,
         method: "GET",
         success: function(data) {
           console.log("Updated stock price and percent change!");
