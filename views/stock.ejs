@@ -106,18 +106,27 @@
     // First thing we should do is check this company's "lastUpdated" field. If it is more than a day old, we should redo the
     // sentiment query and add recent results. When result is true, we need to get more sentiment results.
     consultLastUpdated(comp, function() {
-      renderGraphData(comp, function(renderData) {
+      renderGraphData(comp, function(renderData, history) {
         var ctx = $('.chart');
         var chart = Chart.Line(ctx, {
           data: {
             datasets: [{
               label: 'News Sentiment',
-              fill: true,
+              yAxisID: "y-axis-1",
               borderColor: 'rgba(0, 200, 83, 1)',
               pointBorderColor: 'rgba(0, 230, 118, 1)',
               pointBackgroundColor: 'rgba(0, 230, 118, 1)',
               borderWidth: 1,
               data: renderData,
+              backgroundColor: 'rgba(0, 0, 0, 0)'
+            },{
+              label: 'Stock History',
+              yAxisID: "y-axis-2",
+              borderColor: 'rgba(33, 150, 243, 1)',
+              pointBorderColor: 'rgba(33, 150, 243, 1)',
+              pointBackgroundColor: 'rgba(33, 150, 243, 1)',
+              borderWidth: 1,
+              data: history,
               backgroundColor: 'rgba(0, 0, 0, 0)'
             }]
           },
@@ -151,6 +160,10 @@
                 }
               }],
               yAxes: [{
+                type: "linear",
+                display: true,
+  							position: "left",
+  							id: "y-axis-1",
                 gridLines: {
                   color: 'rgba(255, 255, 255, 0.05)',
                   zeroLineColor: 'rgba(255, 255, 255, 0.15)'
@@ -162,6 +175,15 @@
                 ticks: {
                   max: 2,
                   min: -2
+                }
+              }, {
+                type: "linear",
+                display: true,
+  							position: "right",
+  							id: "y-axis-2",
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Stock Price (USD)'
                 }
               }]
             },
@@ -258,7 +280,17 @@
               return a.x < b.x;
             });
 
-            callback(company_data);
+            var history = <%- JSON.stringify(history); %>
+            var historyData = [];
+
+            for (var i = 0; i < history.length; i++) {
+              historyData.push({
+                x: history[i].Date,
+                y: history[i].Open
+              });
+            }
+
+            callback(company_data, historyData);
           }
         });
       }

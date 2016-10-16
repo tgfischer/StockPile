@@ -1,9 +1,10 @@
 var express = require('express');
 var sanitizer = require('sanitizer');
+var request = require('request');
 var Company = require('../models/Company');
 var Sentiment = require("../models/Sentiment");
+var Converter = require("csvtojson").Converter;
 var router = express.Router();
-var request = require("request");
 
 // API Keys:
 var NYT_API_KEY = "3a7cdfc6260b4973992f8aaaedc7f285";
@@ -13,10 +14,24 @@ var DANDELION_API_KEY = "8f1d6b453a554e74a6b5e2ea4f98543c";
 router.get('/:symbol', function(req, res, next) {
   var symbol = sanitizer.sanitize(req.params.symbol);
 
-  // TODO: Populate company with sentiment information
   Company.findOne({ symbol: symbol }, function(err, company) {
-    res.render('stock', {
-      company: company
+    var url = "http://ichart.finance.yahoo.com/table.csv?s=" + symbol + "&g=m";
+
+    request({
+      url: url,
+      method: 'GET'
+    }, function(error, response, body) {
+      var converter = new Converter({ });
+      converter.fromString(body, function(err, result) {
+        console.log(JSON.stringify(result, null, 2));
+
+        result = result.slice(0, 10);
+
+        res.render('stock', {
+          company: company,
+          history: result
+        });
+      });
     });
   });
 });
