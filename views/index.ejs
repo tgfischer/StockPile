@@ -48,6 +48,8 @@
                     <th></th>
                     <th>Symbol</th>
                     <th>Company Name</th>
+                    <th>Percent Change</th>
+                    <th>Current Stock Value</th>
                     <th></th>
                     <th></th>
                   </tr>
@@ -75,7 +77,7 @@
   $(document).ready(function() {
     // create sidebar and attach to menu open
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
-
+    
     <% if (user) { %>
       var user = <%- JSON.stringify(user) %>;
     <% } else { %>
@@ -93,6 +95,8 @@
         { data: "_id", visible: false, searchable: false, orderable: false },
         { data: "symbol", title: "Symbol", className: "dt-center", width: "10%" },
         { data: "name", title: "Company Name", width: "70%" },
+        { data: "change", title: "Percent Change", className: "dt-center", width: "10%" },
+        { data: "price", title: "Current Stock Value", className: "dt-center", width: "10%" },
         {
           data: null,
           orderable: false,
@@ -128,8 +132,8 @@
     });
 
     if (!user) {
-      listings.column(3).visible(false);
-      listings.column(4).visible(false);
+      listings.column(5).visible(false);
+      listings.column(6).visible(false);
     }
 
     $('.listings tbody').on('click', 'tr', function () {

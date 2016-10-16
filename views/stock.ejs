@@ -59,6 +59,7 @@
     </div>
     <% include common/footer %>
   </div>
+  <% include common/buySellStocks %>
   <script>
     // The following converts the "company" variable which this page is specific for, into a JavaScript variable to be used in the script.
     function htmlDecode(input){
@@ -68,7 +69,6 @@
     }
     var comp = JSON.parse(htmlDecode("<%= JSON.stringify(company) %>"));
   </script>
-
   <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" language="javascript" src="/semantic/semantic.min.js"></script>
   <script type="text/javascript" language="javascript" src="/js/chart.min.js"></script>
@@ -76,6 +76,7 @@
   $(document).ready(function() {
     // create sidebar and attach to menu open
     $('.ui.sidebar').sidebar('attach events', '.toc.item');
+
 
     <% include common/buySellStocksScripts %>
 
@@ -87,7 +88,6 @@
     // sentiment query and add recent results. When result is true, we need to get more sentiment results.
     consultLastUpdated(comp, function() {
       renderGraphData(comp, function(renderData) {
-        console.log(renderData);
         var ctx = $('.chart');
         var chart = Chart.Line(ctx, {
           data: {
@@ -153,17 +153,19 @@
         url: "/stock/sentiment/" + comp._id,
         method: "GET",
         success: function(data) {
-          // if (data) {
-          //   console.log("The company: " + comp.symbol + " was populated with sentiment data! ");
-          //   console.log(data);
-          // } else {
-          //   console.log("Failure");
-          // }
           $("#graph-loader").removeClass("active");
           callback();
         }
       });
     } else {
+      // We should update the finance stats 
+      $.ajax({
+        url: "/stockprice/"+comp._id,
+        method: "GET",
+        success: function(data) {
+          console.log("Updated stock price and percent change!");
+        }
+      });
       $("#graph-loader").removeClass("active");
       callback();
     }
@@ -181,7 +183,6 @@
             sentiments: newCompany.sentiments
           }, 
           success: function (sentiments) {
-            console.log(sentiments);
             var company_data = []; 
             
             // Do a for loop here
@@ -192,7 +193,6 @@
               };
               company_data.push(temp);
             }
-            console.log(company_data.length);
             callback(company_data);
           }
         });

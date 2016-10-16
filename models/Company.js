@@ -4,9 +4,9 @@ var Schema = mongoose.Schema;
 var CompanySchema = new Schema({
   name: String,
   symbol: String,
-  open: Number,
-  prevClose: Number,
   lastUpdated: Date,
+  change: { type: Number, default: 0 }, 
+  price: { type: Number, default: 0 },
   sentiments: [{ type: Schema.Types.ObjectId, ref: 'Sentiment' }],
   stocks: [{ type: Schema.Types.ObjectId, ref: 'Stock' }]
 }, {

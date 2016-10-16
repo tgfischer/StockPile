@@ -102,7 +102,9 @@
       columns: [
         { data: "_id", visible: false, searchable: false, orderable: false },
         { data: "symbol", title: "Symbol", className: "dt-center", width: "10%" },
-        { data: "name", title: "Company Name", width: "70%" },
+        { data: "name", title: "Company Name", width: "50%" },
+        // { data: "change", title: "Percent Change ", className: "dt-center", width: "10%" },
+        // { data: "price", title: "Current Stock Value", className: "dt-center", width: "10%" },
         {
           data: null,
           orderable: false,
@@ -123,7 +125,7 @@
             return "<button class='ui fluid secondary sell button'>Sell</button>";
           }
         },
-        //{ data: "lastUpdated", visible: false, searchable: false }
+        { data: "lastUpdated", visible: false, searchable: false }
       ]
     });
 

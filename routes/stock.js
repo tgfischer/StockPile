@@ -67,7 +67,6 @@ router.get("/sentiment/:_id", function(req, res, next) {
           } else {
             body = JSON.parse(body);
             if (body && body.response && body.response.docs) {
-              console.log("The page is: " + item +  " " + JSON.stringify(body.response.docs));
               if (allDocs.length == 0) {
                 allDocs = body.response.docs;
               } else {
@@ -76,18 +75,13 @@ router.get("/sentiment/:_id", function(req, res, next) {
             } 
 
             if (offsetCount === offsets.length) {
-              console.log("Line 71" + JSON.stringify(allDocs, null, 2));
               handleNewYorkTimesResults(allDocs, function(urls) {
-                console.log("Line 73" + JSON.stringify(urls, null, 2));
                 if (urls) {
                   // STEP 2: For each url returned from New York Times API, get the sentiment score from dandelion API.
-                  console.log("URLS.LENGTH: " + urls.length);
                   handleSentimentParsing(urls, function(sentimentValues) {
                     // Hopefully now we have an array of sentiment values for the company with dates associated!
-                    console.log("BEGINNGIN SENTIMENT ARRAY: " + sentimentValues.length);
                     handleDandelionResults(sentimentValues, function(finalSentimentArray) {
                       // This callback will accept an array of the sentiments we need to save to the current company
-                      console.log("FINAL SENTIMENT ARRAY: " + finalSentimentArray.length);
                       Sentiment.insertMany(finalSentimentArray, function(many_err, sentiments) {
                         if (many_err) {
                           res.send ("Error entering sentiments: " + many_err);
@@ -124,7 +118,6 @@ router.get("/sentiment/:_id", function(req, res, next) {
 
 function handleNewYorkTimesResults(allDocs, callback) {
   var arrayOfUrls = []; 
-  console.log("Line 159" + " " + allDocs.length);
   if (allDocs.length) {
     for (var i = 0; i < allDocs.length; i++) {
       var urlObj = {
@@ -133,7 +126,6 @@ function handleNewYorkTimesResults(allDocs, callback) {
       };
       arrayOfUrls.push(urlObj);
     }
-    console.log("ARRAY OF URLS: " + JSON.stringify(arrayOfUrls, null, 2));
     callback(arrayOfUrls);
   } else {
     callback(null);
@@ -149,10 +141,7 @@ function handleSentimentParsing(urls, callback) {
       if (dand_err) {
         res.send("Error occurred when making request to dandelion API: " + dand_err);
       } else {
-        console.log("BODY" + body);
         body = JSON.parse(body);
-        
-        console.log("SENTIMENT " + body.sentiment + " INDEX" + index);
         if (body && body.sentiment) {
           var sentimentObj = {
             score: body.sentiment.score,
@@ -160,7 +149,6 @@ function handleSentimentParsing(urls, callback) {
           }; 
           sentimentValues.push(sentimentObj);
         } else {
-          // Generate a random number between -1 and 1 - because who really cares :)
           var sentimentObj = {
             score: (Math.random() * ((-0.99000000) - 0.99000000) + 0.99000000).toFixed(8),
             date: new Date(item.date)
@@ -191,7 +179,6 @@ router.post("/sentiment", function(req, res, next) {
         var necessaryIds = [];
         for (var i = 0; i < data.length; i++) {
           for (var j = 0; j < sentimentIds.length; j++) {
-            console.log(data[i]._id + " " + sentimentIds[j]);
             if (data[i]._id == sentimentIds[j]) {
               necessaryIds.push(data[i]);
             }
