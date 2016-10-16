@@ -206,6 +206,11 @@
                 scaleLabel: {
                   display: true,
                   labelString: 'Stock Price (USD)'
+                },
+                ticks: {
+                  callback: function(label, index, labels) {
+                    return '$' + label;
+                  }
                 }
               }]
             },
