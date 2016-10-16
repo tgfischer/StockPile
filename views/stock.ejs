@@ -81,7 +81,7 @@
         <div class="padding-top row">
           <div class="title column">
             <h3 class="ui large inverted header">
-              Sentiment Information
+              Stock History
             </h3>
           </div>
         </div>
@@ -126,6 +126,7 @@
     // Make request to server for the
     Chart.defaults.global.defaultFontColor = "#FFFFFF";
     Chart.defaults.global.defaultFontSize = 15;
+    Chart.defaults.global.legend.display = true;
 
     // First thing we should do is check this company's "lastUpdated" field. If it is more than a day old, we should redo the
     // sentiment query and add recent results. When result is true, we need to get more sentiment results.
@@ -144,7 +145,7 @@
               data: renderData,
               backgroundColor: 'rgba(0, 0, 0, 0)'
             },{
-              label: 'Stock History',
+              label: 'Stock Prices',
               yAxisID: "y-axis-2",
               borderColor: 'rgba(33, 150, 243, 1)',
               pointBorderColor: 'rgba(33, 150, 243, 1)',
@@ -217,7 +218,8 @@
               }]
             },
             legend: {
-              display: false
+              display: true,
+              position: "bottom"
             }
           }
         });
