@@ -290,11 +290,28 @@
                 map[date].score += sentiments[i].score;
                 map[date].count++;
               } else {
-                map[date] = {
-                  score: sentiments[i].score,
-                  date: sentiments[i].date,
-                  count: 1
-                };
+                var handled = false;
+
+                for (var entry in map) {
+                  var a = moment(sentiments[i].date);
+                  var b = moment(entry);
+
+                  if (Math.abs(moment.duration(a.diff(b)).asDays()) < 2) {
+                    map[entry].score += sentiments[i].score;
+                    map[entry].count++;
+                    handled = true;
+
+                    break;
+                  }
+                }
+
+                if (!handled) {
+                  map[date] = {
+                    score: sentiments[i].score,
+                    date: sentiments[i].date,
+                    count: 1
+                  };
+                }
               }
             }
 
