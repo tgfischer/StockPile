@@ -9,6 +9,10 @@
   border-radius: .28571429rem;
 }
 
+.ui.header>.image {
+  width: 1.5em;
+}
+
 .modal .header {
   font-size: 2em !important;
 }
