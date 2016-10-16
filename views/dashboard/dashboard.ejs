@@ -62,7 +62,7 @@
                     <th>Symbol</th>
                     <th>Company Name</th>
                     <th>Percent Change</th>
-                    <th>Current Stock Value</th>
+                    <th>Stock Value</th>
                     <th></th>
                     <th></th>
                   </tr>
@@ -124,7 +124,7 @@
         },
         {
           data: "price",
-          title: "Current Stock Value",
+          title: "Stock Value",
           className: "dt-center",
           width: "15%",
           searchable: false,
@@ -151,8 +151,8 @@
           render: function(data, type, row, meta) {
             return "<button class='ui fluid secondary sell button'>Sell</button>";
           }
-        },
-        { data: "lastUpdated", visible: false, searchable: false }
+        }/*,
+        { data: "lastUpdated", visible: false, searchable: false }*/
       ]
     });
 
