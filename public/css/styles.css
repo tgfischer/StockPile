@@ -59,15 +59,22 @@ tr .fluid.button {
 }
 
 .ui.inverted.breadcrumb a:hover {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .ui.secondary.inverted.pointing.menu {
   border: none !important;
 }
 
+.ui.secondary.inverted.pointing.menu .header {
+  padding: 0;
+  font-size: 2em;
+  font-weight: 700 !important;
+  line-height: 1.4285em;
+}
+
 .ui.secondary.inverted.pointing.menu .ui.inverted.button {
-  margin-left: 0.5em;
+  margin-left: 1em;
 }
 
 .inverted .ui.dataTables_filter.input {
