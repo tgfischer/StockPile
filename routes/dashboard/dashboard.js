@@ -56,7 +56,7 @@ router.post('/buy', Auth.isLoggedIn, function(req, res, next) {
         }, {
           upsert: true
         }, function(err) {
-          res.json({ msg: 'Success!' });
+          res.json({ msg: 'The transaction was a success!' });
         });
       });
     });
@@ -108,7 +108,7 @@ router.post('/sell', Auth.isLoggedIn, function(req, res, next) {
         }, {
           upsert: true
         }, function(err) {
-          res.json({ msg: 'Success!' });
+          res.json({ msg: 'The transaction was a success!' });
         });
       });
     });

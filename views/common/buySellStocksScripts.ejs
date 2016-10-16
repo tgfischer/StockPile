@@ -1,3 +1,14 @@
+var showSuccessModal = function(json) {
+  $('.message').text(json.msg);
+
+  $('.ui.success.modal').modal({
+    blurring: true,
+    onApprove: function() {
+      window.location.reload();
+    }
+  }).modal('show');
+}
+
 $('input[name=numStocks]').keyup(function(e) {
   var numStocksText = $(this).val();
   var costPerStock = parseFloat($('.stock-price:visible').text());
@@ -9,19 +20,31 @@ $('input[name=numStocks]').keyup(function(e) {
 $('.listings tbody').on('click', 'button.buy', function() {
   var data = listings.row($(this).parents('tr')).data();
 
+  var numOwned = 0;
+
+  for (var i = 0; i < user.stocks.length; i++) {
+    if (user.stocks[i].company._id === data._id) {
+      numOwned++;
+    }
+  }
+
   $('.stock-name').text(data.name);
   $('.stock-symbol').text(data.symbol);
   $('.stock-price').text(115);
+  $('.stock-owned').text(numOwned);
   $('.total').text(0);
   $('input[name=companyId]').val(data._id);
   $('input[name=numStocks]').val(0);
 
   $('.ui.buy.modal').modal({
+    blurring: true,
     onApprove : function() {
       $('.ui.buy.form').submit(function(e) {
-        $.post('/dashboard/buy', $('.ui.buy.form').serialize(), function(json) {
-          window.location.reload();
-        });
+        if ($('input[name=numStocks]:visible').val() > 0) {
+          $.post('/dashboard/buy', $('.ui.buy.form').serialize(), function(json) {
+            showSuccessModal(json);
+          });
+        }
 
         return false;
       });
@@ -36,19 +59,31 @@ $('.listings tbody').on('click', 'button.buy', function() {
 $('.listings tbody').on('click', 'button.sell', function() {
   var data = listings.row($(this).parents('tr')).data();
 
+  var numOwned = 0;
+
+  for (var i = 0; i < user.stocks.length; i++) {
+    if (user.stocks[i].company._id === data._id) {
+      numOwned++;
+    }
+  }
+
   $('.stock-name').text(data.name);
   $('.stock-symbol').text(data.symbol);
   $('.stock-price').text(115);
+  $('.stock-owned').text(numOwned);
   $('.total').text(0);
   $('input[name=companyId]').val(data._id);
   $('input[name=numStocks]').val(0);
 
   $('.ui.sell.modal').modal({
+    blurring: true,
     onApprove : function() {
       $('.ui.sell.form').submit(function(e) {
-        $.post('/dashboard/sell', $('.ui.sell.form').serialize(), function(json) {
-          window.location.reload();
-        });
+        if ($('input[name=numStocks]:visible').val() > 0) {
+          $.post('/dashboard/sell', $('.ui.sell.form').serialize(), function(json) {
+            showSuccessModal(json);
+          });
+        }
 
         return false;
       });
@@ -62,19 +97,31 @@ $('.listings tbody').on('click', 'button.sell', function() {
 
 <% if (typeof company != "undefined") { %>
   $('button.buy').click(function() {
+    var numOwned = 0;
+
+    for (var i = 0; i < user.stocks.length; i++) {
+      if (user.stocks[i].company._id === companyObj._id) {
+        numOwned++;
+      }
+    }
+
     $('.stock-name').text("<%= company.name %>");
     $('.stock-symbol').text("<%= company.symbol %>");
     $('.stock-price').text(115);
+    $('.stock-owned').text(numOwned);
     $('.total').text(0);
     $('input[name=companyId]').val("<%= company._id %>");
     $('input[name=numStocks]').val(0);
 
     $('.ui.buy.modal').modal({
+      blurring: true,
       onApprove : function() {
         $('.ui.buy.form').submit(function(e) {
-          $.post('/dashboard/buy', $('.ui.buy.form').serialize(), function(json) {
-            window.location.reload();
-          });
+          if ($('input[name=numStocks]:visible').val() > 0) {
+            $.post('/dashboard/buy', $('.ui.buy.form').serialize(), function(json) {
+              showSuccessModal(json);
+            });
+          }
 
           return false;
         });
@@ -87,19 +134,31 @@ $('.listings tbody').on('click', 'button.sell', function() {
   });
 
   $('button.sell').click(function() {
+    var numOwned = 0;
+
+    for (var i = 0; i < user.stocks.length; i++) {
+      if (user.stocks[i].company._id === companyObj._id) {
+        numOwned++;
+      }
+    }
+
     $('.stock-name').text("<%= company.name %>");
     $('.stock-symbol').text("<%= company.symbol %>");
     $('.stock-price').text(115);
+    $('.stock-owned').text(numOwned);
     $('.total').text(0);
     $('input[name=companyId]').val("<%= company._id %>");
     $('input[name=numStocks]').val(0);
 
     $('.ui.sell.modal').modal({
+      blurring: true,
       onApprove : function() {
         $('.ui.sell.form').submit(function(e) {
-          $.post('/dashboard/sell', $('.ui.sell.form').serialize(), function(json) {
-            window.location.reload();
-          });
+          if ($('input[name=numStocks]:visible').val() > 0) {
+            $.post('/dashboard/sell', $('.ui.sell.form').serialize(), function(json) {
+              showSuccessModal(json);
+            });
+          }
 
           return false;
         });

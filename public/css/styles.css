@@ -1,3 +1,30 @@
+.ui.inverted.button,
+.ui.inverted.buy.button,
+.ui.inverted.sell.button {
+  box-shadow: 0 0 0 1px !important;
+  font-weight: 100 !important;
+}
+
+.light-text,
+.light-text * {
+  font-weight: 100 !important;
+}
+
+.regular-text,
+.regular-text * {
+  font-weight: 400 !important;
+}
+
+.bold-text,
+.bold-text * {
+  font-weight: 700 !important;
+}
+
+.light-text th,
+.light-text .paginate_button {
+  font-weight: 400 !important;
+}
+
 .padding-right {
   padding-right: 15px;
 }
