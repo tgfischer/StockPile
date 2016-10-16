@@ -7,11 +7,11 @@
     <div class="right item">
       <% if (user) { %>
         <span class="padding-right">Welcome back <b><%= user.firstName %></b></span>
-        <a href="/dashboard" class="ui inverted button">PORTFOLIO</a>
-        <a href="/logout" class="ui inverted button">LOG OUT</a>
+        <a href="/dashboard" class="ui inverted item button">PORTFOLIO</a>
+        <a href="/logout" class="ui inverted item button">LOG OUT</a>
       <% } else { %>
-        <a href="/login" class="ui inverted button">LOG IN</a>
-        <a href="/signup" class="ui inverted button">SIGN UP</a>
+        <a href="/login" class="ui inverted item button">LOG IN</a>
+        <a href="/signup" class="ui inverted item button">SIGN UP</a>
       <% } %>
     </div>
   </div>

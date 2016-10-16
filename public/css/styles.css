@@ -5,6 +5,10 @@
   font-weight: 100 !important;
 }
 
+.ui.secondary.pointing.menu .item.button {
+  border-radius: .28571429rem;
+}
+
 .modal .header {
   font-size: 2em !important;
 }
