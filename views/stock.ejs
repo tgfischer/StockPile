@@ -47,9 +47,11 @@
                     <div class="four wide column">
                       Current Sale Price: $<%= company.price %>
                     </div>
-                    <div class="four wide column">
-                      Amount Owned: <%= amountOwned %>
-                    </div>
+                    <% if (user) { %>
+                      <div class="four wide column">
+                        Amount Owned: <%= amountOwned %>
+                      </div>
+                    <% } %>
                     <div class="five wide column">
                       Percent Change:
                       <% if(company.change < 0) { %>
