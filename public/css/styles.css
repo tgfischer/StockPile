@@ -5,6 +5,14 @@
   font-weight: 100 !important;
 }
 
+.modal .header {
+  font-size: 2em !important;
+}
+
+.success.modal .message {
+  font-size: 1.5em !important;
+}
+
 .light-text,
 .light-text * {
   font-weight: 100 !important;
