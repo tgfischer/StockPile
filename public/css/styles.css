@@ -77,11 +77,16 @@ tr .fluid.button {
   flex: 1;
 }
 
+.medium.sub.header {
+  font-size: 0.5em !important;
+}
+
+.padding-top {
+  padding-top: 2em !important;
+}
+
 .hidden.menu {
   display: none;
-}
-.ui.vertical.stripe h3 {
-  font-size: 2em;
 }
 .ui.vertical.stripe .button + h3,
 .ui.vertical.stripe p + h3 {

@@ -37,22 +37,29 @@
           <div class="title column">
             <h1 class="ui huge inverted header">
               <%= company.name %>
-              <div class="sub header">Symbol: <%= company.symbol %></div>
+              <div class="medium sub header">Symbol: <%= company.symbol %></div>
             </h1>
           </div>
         </div>
         <% if (user) { %>
           <div class="row">
-            <div class="two wide column">
-              <button class="ui fluid green inverted buy button">Buy</button>
+            <div class="three wide column">
+              <button class="ui big fluid green inverted buy button">Buy</button>
             </div>
-            <div class="two wide column">
-              <button class="ui <% if (!user.stocks.filter(function(stock) { return stock.company._id === company._id }).length == 0) { %>disabled<% } %> fluid secondary inverted sell button">
+            <div class="three wide column">
+              <button class="ui big <% if (!user.stocks.filter(function(stock) { return stock.company._id === company._id }).length == 0) { %>disabled<% } %> fluid secondary inverted sell button">
                 Sell
               </button>
             </div>
           </div>
         <% } %>
+        <div class="padding-top row">
+          <div class="title column">
+            <h3 class="ui large inverted header">
+              Sentiment Information
+            </h3>
+          </div>
+        </div>
         <div class="row">
           <div class="title column">
             <div id="graph-loader" class="ui big text active loader">Analyzing News...</div>
@@ -74,6 +81,7 @@
   </script>
   <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" language="javascript" src="/semantic/semantic.min.js"></script>
+  <script type="text/javascript" language="javascript" src="/js/moment.min.js"></script>
   <script type="text/javascript" language="javascript" src="/js/chart.min.js"></script>
   <script>
   $(document).ready(function() {
@@ -94,7 +102,7 @@
     Chart.defaults.global.defaultFontColor = "#FFFFFF";
     Chart.defaults.global.defaultFontSize = 15;
 
-    // First thing we should do is check this company's "lastUpdated" field. If it is more than a day old, we should redo the 
+    // First thing we should do is check this company's "lastUpdated" field. If it is more than a day old, we should redo the
     // sentiment query and add recent results. When result is true, we need to get more sentiment results.
     consultLastUpdated(comp, function() {
       renderGraphData(comp, function(renderData) {
@@ -102,12 +110,14 @@
         var chart = Chart.Line(ctx, {
           data: {
             datasets: [{
-              label: 'Scatter Dataset',
+              label: 'News Sentiment',
               fill: true,
-              borderColor: 'rgba(183, 28, 28, 1)',
-              pointBorderColor: 'rgba(239, 83, 80, 1)',
-              pointBackgroundColor: 'rgba(239, 83, 80, 1)',
-              data: renderData
+              borderColor: 'rgba(0, 200, 83, 1)',
+              pointBorderColor: 'rgba(0, 230, 118, 1)',
+              pointBackgroundColor: 'rgba(0, 230, 118, 1)',
+              borderWidth: 1,
+              data: renderData,
+              backgroundColor: 'rgba(0, 0, 0, 0)'
             }]
           },
           options: {
@@ -115,17 +125,42 @@
             animation: false,
             scales: {
               xAxes: [{
-                type: 'linear',
+                type: 'time',
+                time: {
+                  displayFormats: {
+                     'millisecond': 'MMM DD',
+                     'second': 'MMM DD',
+                     'minute': 'MMM DD',
+                     'hour': 'MMM DD',
+                     'day': 'MMM DD',
+                     'week': 'MMM DD',
+                     'month': 'MMM DD',
+                     'quarter': 'MMM DD',
+                     'year': 'MMM DD',
+                  }
+                },
                 position: 'bottom',
                 gridLines: {
                   color: 'rgba(255, 255, 255, 0.05)',
                   zeroLineColor: 'rgba(255, 255, 255, 0.15)'
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Week of Analysis'
                 }
               }],
               yAxes: [{
                 gridLines: {
                   color: 'rgba(255, 255, 255, 0.05)',
                   zeroLineColor: 'rgba(255, 255, 255, 0.15)'
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Sentiment Value'
+                },
+                ticks: {
+                  max: 2,
+                  min: -2
                 }
               }]
             },
@@ -135,7 +170,7 @@
           }
         });
       });   // end renderGraphData callback
-    });     // end consultLastUpdated callback   
+    });     // end consultLastUpdated callback
   });       // end document ready
 
   function consultLastUpdated(comp, callback) {
@@ -149,8 +184,8 @@
       var currentDate = new Date();
 
       var timeDiff = Math.abs(currentDate.getTime() - lastUpdated.getTime());
-      var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
-      
+      var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
       if (diffDays > 1) {
         update = true;
       } else {
@@ -168,7 +203,7 @@
         }
       });
     } else {
-      // We should update the finance stats 
+      // We should update the finance stats
       $.ajax({
         url: "/stockprice/"+comp._id,
         method: "GET",
@@ -191,18 +226,37 @@
           method: "POST",
           data: {
             sentiments: newCompany.sentiments
-          }, 
+          },
           success: function (sentiments) {
-            var company_data = []; 
-            
-            // Do a for loop here
+            var company_data = [];
+            var map = {};
+
             for (var i = 0; i < sentiments.length; i++) {
-              var temp = {
-                x: i,
-                y: sentiments[i].score
-              };
-              company_data.push(temp);
+              var date = moment(sentiments[i].date).format('MM/DD/YYYY');
+
+              if (map[date]) {
+                map[date].score += sentiments[i].score;
+                map[date].count++;
+              } else {
+                map[date] = {
+                  score: sentiments[i].score,
+                  date: sentiments[i].date,
+                  count: 1
+                };
+              }
             }
+
+            for (var entry in map) {
+              company_data.push({
+                x: entry,
+                y: (map[entry].score / map[entry].count).toFixed(2)
+              });
+            }
+
+            company_data = company_data.sort(function(a, b) {
+              return a.x < b.x;
+            });
+
             callback(company_data);
           }
         });
